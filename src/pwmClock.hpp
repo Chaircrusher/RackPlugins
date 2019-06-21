@@ -109,7 +109,7 @@ struct PwmClock : Module
 	}
 	void step() override;
 
-	json_t *toJson() override
+	json_t *dataToJson() override
 	{
 		json_t *rootJ = json_object();
 		json_t *bpmJson = json_integer((int)bpm_integer);
@@ -117,7 +117,7 @@ struct PwmClock : Module
 		return rootJ;
 	}
 
-	void fromJson(json_t *rootJ) override
+	void dataFromJson(json_t *rootJ) override
 	{
 		json_t *bpmJson = json_object_get(rootJ, "bpm_integer");
 		if(bpmJson)
