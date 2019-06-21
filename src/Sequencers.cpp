@@ -28,27 +28,23 @@ void init(rack::Plugin *p)
 {
 	plugin = p;
 	// This is the unique identifier for your plugin
-	p->slug = "TheXOR";
-#ifdef VERSION
-	p->version = TOSTRING(VERSION);
-#endif
 	p->website = "https://github.com/The-XOR/VCV-Sequencers";
 	p->manual = "https://github.com/The-XOR/VCV-Sequencers/blob/master/README.md";
 
 	// For each module, specify the ModuleWidget subclass, manufacturer slug (for saving in patches), manufacturer human-readable name, module slug, and module name
-	p->addModel(Model::create<Klee, KleeWidget>("TheXOR", "Klee", "Klee Sequencer", SEQUENCER_TAG));
-	p->addModel(Model::create<M581, M581Widget>("TheXOR", "M581", "581 Sequencer", SEQUENCER_TAG));
-	p->addModel(Model::create<Z8K, Z8KWidget>("TheXOR", "Z8K", "Z8K Sequencer", SEQUENCER_TAG));
-	p->addModel(Model::create<Renato, RenatoWidget>("TheXOR", "Renato", "Renato Sequencer", SEQUENCER_TAG));
-	p->addModel(Model::create<Spiralone, SpiraloneWidget>("TheXOR", "Spiralone", "Spiralone Sequencer", SEQUENCER_TAG));
-	p->addModel(Model::create<Burst, BurstWidget>("TheXOR", "Burst", "Burst", SEQUENCER_TAG));
-	p->addModel(Model::create<Uncertain, UncertainWidget>("TheXOR", "Uncertain", "Uncertain", RANDOM_TAG));
-	p->addModel(Model::create<PwmClock, PwmClockWidget>("TheXOR", "PWMClock", "PWM Clock", CLOCK_TAG));
-	p->addModel(Model::create<Quantizer, QuantizerWidget>("TheXOR", "Quantizer", "Quantizer", QUANTIZER_TAG));
-	p->addModel(Model::create<Attenuator, AttenuatorWidget>("TheXOR", "Attenuator", "Attenuator", ATTENUATOR_TAG));
-	p->addModel(Model::create<Boole, BooleWidget>("TheXOR", "Boole", "Boole", LOGIC_TAG));
-	p->addModel(Model::create<Switch, SwitchWidget>("TheXOR", "Switch", "Switch", SWITCH_TAG));
-	p->addModel(Model::create<Mplex, MplexWidget>("TheXOR", "Mplex", "Mplex", SWITCH_TAG));
+	p->addModel(Model::create<Klee, KleeWidget>("Klee"));
+	p->addModel(Model::create<M581, M581Widget>("M581"));
+	p->addModel(Model::create<Z8K, Z8KWidget>("Z8K"));
+	p->addModel(Model::create<Renato, RenatoWidget>("Renato"));
+	p->addModel(Model::create<Spiralone, SpiraloneWidget>("Spiralone"));
+	p->addModel(Model::create<Burst, BurstWidget>("Burst"));
+	p->addModel(Model::create<Uncertain, UncertainWidget>("Uncertain"));
+	p->addModel(Model::create<PwmClock, PwmClockWidget>("PWMClock"));
+	p->addModel(Model::create<Quantizer, QuantizerWidget>("Quantizer"));
+	p->addModel(Model::create<Attenuator, AttenuatorWidget>("Attenuator"));
+	p->addModel(Model::create<Boole, BooleWidget>("Boole"));
+	p->addModel(Model::create<Switch, SwitchWidget>("Switch"));
+	p->addModel(Model::create<Mplex, MplexWidget>("Mplex"));
 
 #ifdef LPTEST_MODULE
 	p->addModel(Model::create<LaunchpadTest, LaunchpadTestWidget>("TheXOR", "LaunchpadTest", "Launchpad Test", DIGITAL_TAG));

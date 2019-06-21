@@ -1,0 +1,112 @@
+{
+  "slug": "theXOR",
+  "name": "theXOR",
+  "version": "1.0.0",
+  "license": "CC0",
+  "brand": "theXOR",
+  "author": "The-Xor",
+  "authorEmail": "",
+  "authorUrl": "https://github.com/The-XOR/RackPlugins",
+  "pluginUrl": "https://github.com/The-XOR/RackPlugins",
+  "manualUrl": "https://github.com/The-XOR/RackPlugins",
+  "sourceUrl": "https://github.com/The-XOR/RackPlugins",
+  "donateUrl": "",
+  "modules": [
+    {
+      "slug": "Klee",
+      "name": "Klee",
+      "description": "Klee Sequencer",
+      "tags": [
+        "Sequencer"
+      ]
+    },
+    {
+      "slug": "M581",
+      "name": "M581",
+      "description": "581 Sequencer",
+      "tags": [
+        "Sequencer"
+      ]
+    },
+    {
+      "slug": "Z8K",
+      "name": "Z8K",
+      "description": "Z8K Sequencer",
+      "tags": [
+        "Sequencer"
+      ]
+    },
+    {
+      "slug": "Renato",
+      "name": "Renato",
+      "description": "Renato Sequencer",
+      "tags": [
+        "Sequencer"
+      ]
+    },
+    {
+      "slug": "Spiralone",
+      "name": "Spiralone",
+      "description": "Spiralone Sequencer",
+      "tags": [
+        "Sequencer"
+      ]
+    },
+    {
+      "slug": "Burst",
+      "name": "Burst",
+      "description": "Burst",
+      "tags": [
+        "Sequencer"
+      ]
+    },
+    {
+      "slug": "PWMClock",
+      "name": "PWMClock",
+      "description": "PWM Clock",
+      "tags": [
+        "Clock"
+      ]
+    },
+    {
+      "slug": "Quantizer",
+      "name": "Quantizer",
+      "description": "Quantizer",
+      "tags": [
+        "Quantizer"
+      ]
+    },
+    {
+      "slug": "Attenuator",
+      "name": "Attenuator",
+      "description": "Attenuator",
+      "tags": [
+        "Attenuator"
+      ]
+    },
+    {
+      "slug": "Boole",
+      "name": "Boole",
+      "description": "Boole",
+      "tags": [
+        "Logic"
+      ]
+    },
+    {
+      "slug": "Switch",
+      "name": "Switch",
+      "description": "Switch",
+      "tags": [
+        "Switch"
+      ]
+    },
+    {
+      "slug": "Mplex",
+      "name": "Mplex",
+      "description": "Mplex",
+      "tags": [
+        "Switch"
+      ]
+    }
+  ]
+}
