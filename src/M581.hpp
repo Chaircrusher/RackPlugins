@@ -35,7 +35,7 @@ struct BefacoSlidePotFix : SVGSlider
 	
 		maxHandlePos = Vec(mm2px(-3.09541 / 2.0 + 2.27312 / 2.0), -mm2px(5.09852 / 2.0)).plus(margin);
 		minHandlePos = Vec(mm2px(-3.09541 / 2.0 + 2.27312 / 2.0), mm2px(27.51667 - 5.09852 / 2.0)).plus(margin);
-		setSVGs(SVG::load(assetPlugin(plugin, "res/BefacoSlidePot.svg")), SVG::load(assetPlugin(plugin, "res/BefacoSlidePotHandle.svg")));
+		setSVGs(SVG::load(assetPlugin(pluginInstance, "res/BefacoSlidePot.svg")), SVG::load(assetPlugin(pluginInstance, "res/BefacoSlidePotHandle.svg")));
 		background->box.pos = margin;
 		box.size = background->box.size.plus(margin.mult(2));
 	}
@@ -49,11 +49,11 @@ struct CounterSwitch : SVGFader
 		snap = true;
 		maxHandlePos = Vec(-mm2px(2.3-2.3/2.0), 0);
 		minHandlePos = Vec(-mm2px(2.3-2.3/2.0), mm2px(24-2.8));
-		background->svg = SVG::load(assetPlugin(plugin, "res/counterSwitchPot.svg"));
+		background->svg = SVG::load(assetPlugin(pluginInstance, "res/counterSwitchPot.svg"));
 		background->wrap();
 		background->box.pos = Vec(0, 0);
 		box.size = background->box.size;
-		handle->svg = SVG::load(assetPlugin(plugin, "res/counterSwitchPotHandle.svg"));
+		handle->svg = SVG::load(assetPlugin(pluginInstance, "res/counterSwitchPotHandle.svg"));
 		handle->wrap();
 	}
 
@@ -67,7 +67,7 @@ struct RunModeDisplay : TransparentWidget
 
 	RunModeDisplay()
 	{
-		font = Font::load(assetPlugin(plugin, "res/Segment7Standard.ttf"));
+		font = Font::load(assetPlugin(pluginInstance, "res/Segment7Standard.ttf"));
 	}
 
 	void draw(NVGcontext *vg) override

@@ -8,7 +8,7 @@
 // module widgets
 ////////////////////
 using namespace rack;
-extern Plugin *plugin;
+extern Plugin *pluginInstance;
 
 struct LaunchpadTest;
 struct LaunchpadTestWidget : ModuleWidget
@@ -18,8 +18,8 @@ struct LaunchpadTestWidget : ModuleWidget
 
 struct PatternBtn : SVGSwitch, ToggleSwitch {
 	PatternBtn() {
-		addFrame(SVG::load(assetPlugin(plugin, "res/Patternbtn_0.svg")));
-		addFrame(SVG::load(assetPlugin(plugin, "res/Patternbtn_1.svg")));
+		addFrame(SVG::load(assetPlugin(pluginInstance, "res/Patternbtn_0.svg")));
+		addFrame(SVG::load(assetPlugin(pluginInstance, "res/Patternbtn_1.svg")));
 	}
 };
 

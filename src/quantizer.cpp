@@ -31,7 +31,7 @@ QuantizerWidget::QuantizerWidget(Quantizer *module) : ModuleWidget(module)
 	{
 		SVGPanel *panel = new SVGPanel();
 		panel->box.size = box.size;
-		panel->setBackground(SVG::load(assetPlugin(plugin, "res/modules/quantizer.svg")));		
+		panel->setBackground(SVG::load(assetPlugin(pluginInstance, "res/modules/quantizer.svg")));		
 		addChild(panel);
 	}
 

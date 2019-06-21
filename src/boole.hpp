@@ -4,7 +4,7 @@
 // module widgets
 ////////////////////
 using namespace rack;
-extern Plugin *plugin;
+extern Plugin *pluginInstance;
 
 #define NUM_BOOL_OP		(5)		//not, and, or, (the) xor, implication
 struct Boole;

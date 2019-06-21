@@ -5,8 +5,8 @@ struct UPSWITCH : SVGSwitch, MomentarySwitch
 {
 	UPSWITCH()
 	{
-		addFrame(SVG::load(assetPlugin(plugin, "res/upswitch_0.svg")));
-		addFrame(SVG::load(assetPlugin(plugin, "res/upswitch_1.svg")));
+		addFrame(SVG::load(assetPlugin(pluginInstance, "res/upswitch_0.svg")));
+		addFrame(SVG::load(assetPlugin(pluginInstance, "res/upswitch_1.svg")));
 	}
 };
 
@@ -14,8 +14,8 @@ struct DNSWITCH : SVGSwitch, MomentarySwitch
 {
 	DNSWITCH()
 	{
-		addFrame(SVG::load(assetPlugin(plugin, "res/dnswitch_0.svg")));
-		addFrame(SVG::load(assetPlugin(plugin, "res/dnswitch_1.svg")));
+		addFrame(SVG::load(assetPlugin(pluginInstance, "res/dnswitch_0.svg")));
+		addFrame(SVG::load(assetPlugin(pluginInstance, "res/dnswitch_1.svg")));
 	}
 };
 
@@ -23,7 +23,7 @@ struct Rogan1PSRedSmall : Rogan
 {
 	Rogan1PSRedSmall()
 	{
-		setSVG(SVG::load(assetPlugin(plugin, "res/Rogan2PSRedSmall.svg")));
+		setSVG(SVG::load(assetPlugin(pluginInstance, "res/Rogan2PSRedSmall.svg")));
 	}
 };
 

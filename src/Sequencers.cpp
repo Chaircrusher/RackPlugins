@@ -21,13 +21,13 @@
 #include "oscTestModule.hpp"
 #endif 
 
-// The plugin-wide instance of the Plugin class
-Plugin *plugin;
+// The pluginInstance-wide instance of the Plugin class
+Plugin *pluginInstance;
 
 void init(rack::Plugin *p)
 {
-	plugin = p;
-	// This is the unique identifier for your plugin
+	pluginInstance = p;
+	// This is the unique identifier for your pluginInstance
 	p->website = "https://github.com/The-XOR/VCV-Sequencers";
 	p->manual = "https://github.com/The-XOR/VCV-Sequencers/blob/master/README.md";
 
@@ -54,6 +54,6 @@ void init(rack::Plugin *p)
 	p->addModel(Model::create<OscTest, OscTestWidget>("TheXOR", "OSCTest", "OSC Test", DIGITAL_TAG));
 #endif
 
-	// Any other plugin initialization may go here.
+	// Any other pluginInstance initialization may go here.
 	// As an alternative, consider lazy-loading assets and lookup tables when your module is created to reduce startup times of Rack.
 }

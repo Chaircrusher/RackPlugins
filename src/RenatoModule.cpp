@@ -97,7 +97,7 @@ RenatoWidget::RenatoWidget(Renato *module ) : SequencerWidget(module)
 	box.size = Vec(39 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT);
 	SVGPanel *panel = new SVGPanel();
 	panel->box.size = box.size;
-	panel->setBackground(SVG::load(assetPlugin(plugin, "res/modules/RenatoModule.svg")));
+	panel->setBackground(SVG::load(assetPlugin(pluginInstance, "res/modules/RenatoModule.svg")));
 	addChild(panel);
 	addChild(Widget::create<ScrewBlack>(Vec(RACK_GRID_WIDTH, 0)));
 	addChild(Widget::create<ScrewBlack>(Vec(box.size.x -  2*RACK_GRID_WIDTH, 0)));

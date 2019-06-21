@@ -10,7 +10,7 @@
 #define LVL_OFF   (0.0)
 
 using namespace rack;
-extern Plugin *plugin;
+extern Plugin *pluginInstance;
 
 #if defined(ARCH_WIN) && defined(USE_LAUNCHPAD)
 #define LAUNCHPAD
@@ -40,7 +40,7 @@ struct _davies1900base : Davies1900hKnob
 {
 	_davies1900base(const char *res) 
 	{
-		setSVG(SVG::load(assetPlugin(plugin, res)));
+		setSVG(SVG::load(assetPlugin(pluginInstance, res)));
 	}
 
 	void randomize() override
@@ -84,7 +84,7 @@ struct _ioPort : SVGPort
 {
 	_ioPort(const char *res)
 	{
-		background->svg = SVG::load(assetPlugin(plugin, res));
+		background->svg = SVG::load(assetPlugin(pluginInstance, res));
 		background->wrap();
 		box.size = background->box.size;
 	}
@@ -151,15 +151,15 @@ struct CL1362WPort : _ioPort
 
 struct BefacoPushBig : SVGSwitch, MomentarySwitch {
 	BefacoPushBig() {
-		addFrame(SVG::load(assetPlugin(plugin, "res/BefacoPush_0big.svg")));
-		addFrame(SVG::load(assetPlugin(plugin, "res/BefacoPush_1big.svg")));
+		addFrame(SVG::load(assetPlugin(pluginInstance, "res/BefacoPush_0big.svg")));
+		addFrame(SVG::load(assetPlugin(pluginInstance, "res/BefacoPush_1big.svg")));
 	}
 };
 
 struct CKSSFix : SVGSwitch, ToggleSwitch {
 	CKSSFix() {
-		addFrame(SVG::load(assetPlugin(plugin, "res/CKSS_0.svg")));
-		addFrame(SVG::load(assetPlugin(plugin, "res/CKSS_1.svg")));
+		addFrame(SVG::load(assetPlugin(pluginInstance, "res/CKSS_0.svg")));
+		addFrame(SVG::load(assetPlugin(pluginInstance, "res/CKSS_1.svg")));
 	}
 	void randomize() override
 	{
@@ -169,9 +169,9 @@ struct CKSSFix : SVGSwitch, ToggleSwitch {
 
 struct CKSSThreeFix : SVGSwitch, ToggleSwitch {
 	CKSSThreeFix() {
-		addFrame(SVG::load(assetPlugin(plugin, "res/CKSSThree_0.svg")));
-		addFrame(SVG::load(assetPlugin(plugin, "res/CKSSThree_1.svg")));
-		addFrame(SVG::load(assetPlugin(plugin, "res/CKSSThree_2.svg")));
+		addFrame(SVG::load(assetPlugin(pluginInstance, "res/CKSSThree_0.svg")));
+		addFrame(SVG::load(assetPlugin(pluginInstance, "res/CKSSThree_1.svg")));
+		addFrame(SVG::load(assetPlugin(pluginInstance, "res/CKSSThree_2.svg")));
 	}
 	void randomize() override
 	{
@@ -181,8 +181,8 @@ struct CKSSThreeFix : SVGSwitch, ToggleSwitch {
 
 struct TL1105Sw : SVGSwitch, ToggleSwitch {
 	TL1105Sw() {
-		addFrame(SVG::load(assetPlugin(plugin, "res/TL1105_0.svg")));
-		addFrame(SVG::load(assetPlugin(plugin, "res/TL1105_1.svg")));
+		addFrame(SVG::load(assetPlugin(pluginInstance, "res/TL1105_0.svg")));
+		addFrame(SVG::load(assetPlugin(pluginInstance, "res/TL1105_1.svg")));
 	}
 };
 
@@ -238,9 +238,9 @@ struct SchmittTrigger2
 struct NKK2 : SVGSwitch, ToggleSwitch
 {
 	NKK2() {
-		addFrame(SVG::load(assetPlugin(plugin, "res/NKK_0.svg")));
-		addFrame(SVG::load(assetPlugin(plugin, "res/NKK_1.svg")));
-		addFrame(SVG::load(assetPlugin(plugin, "res/NKK_2.svg")));
+		addFrame(SVG::load(assetPlugin(pluginInstance, "res/NKK_0.svg")));
+		addFrame(SVG::load(assetPlugin(pluginInstance, "res/NKK_1.svg")));
+		addFrame(SVG::load(assetPlugin(pluginInstance, "res/NKK_2.svg")));
 	}
 
 	void randomize() override
@@ -261,8 +261,8 @@ struct BefacoSnappedSwitch : SVGSwitch, ToggleSwitch
 
 	BefacoSnappedSwitch()
 	{
-		addFrame(SVG::load(assetPlugin(plugin, "res/BefacoSwitch_0.svg")));
-		addFrame(SVG::load(assetPlugin(plugin, "res/BefacoSwitch_2.svg")));
+		addFrame(SVG::load(assetPlugin(pluginInstance, "res/BefacoSwitch_0.svg")));
+		addFrame(SVG::load(assetPlugin(pluginInstance, "res/BefacoSwitch_2.svg")));
 	}
 };
 
@@ -275,11 +275,11 @@ struct VerticalSwitch : SVGFader
 		snap = true;
 		maxHandlePos = Vec(-mm2px(2.3-2.3/2.0), 0);
 		minHandlePos = Vec(-mm2px(2.3-2.3/2.0),mm2px(13-2.8));
-		background->svg = SVG::load(assetPlugin(plugin, "res/counterSwitchShort.svg"));
+		background->svg = SVG::load(assetPlugin(pluginInstance, "res/counterSwitchShort.svg"));
 		background->wrap();
 		background->box.pos = Vec(0, 0);
 		box.size = background->box.size;
-		handle->svg = SVG::load(assetPlugin(plugin, "res/counterSwitchPotHandle.svg"));
+		handle->svg = SVG::load(assetPlugin(pluginInstance, "res/counterSwitchPotHandle.svg"));
 		handle->wrap();
 	}
 
@@ -352,8 +352,8 @@ struct DigitalLed : SVGWidget
 
 	DigitalLed(int x, int y, float *pVal)
 	{
-		frames.push_back(SVG::load(assetPlugin(plugin, "res/digitalLed_off.svg")));
-		frames.push_back(SVG::load(assetPlugin(plugin, "res/digitalLed_on.svg")));
+		frames.push_back(SVG::load(assetPlugin(pluginInstance, "res/digitalLed_off.svg")));
+		frames.push_back(SVG::load(assetPlugin(pluginInstance, "res/digitalLed_on.svg")));
 		setSVG(frames[0]);
 		wrap();
 		box.pos = Vec(x, y);
@@ -382,7 +382,7 @@ public:
 	{
 		digits = digit;
 		precision = precis;
-		font = Font::load(assetPlugin(plugin, "res/Segment7Standard.ttf"));
+		font = Font::load(assetPlugin(pluginInstance, "res/Segment7Standard.ttf"));
 	};
 
 	void draw(NVGcontext *vg) override
