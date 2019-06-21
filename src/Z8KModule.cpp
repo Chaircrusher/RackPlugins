@@ -32,7 +32,7 @@ void Z8K::load()
 	seq[SEQ_VERT].Init(&inputs[RESET_VERT], &inputs[DIR_VERT], &inputs[CLOCK_VERT], &outputs[CV_VERT], &lights[LED_VERT], params, steps_v);
 }
 
-void Z8K::step()
+void Z8K::process(const ProcessArgs &args)
 {
 	bool activeSteps[16];
 	for(int k = 0; k < 16; k++)
@@ -43,7 +43,7 @@ void Z8K::step()
 
 	for(int k = 0; k < 16; k++)
 	{
-		outputs[ACTIVE_STEP + k].value = activeSteps[k] ? LVL_ON : LVL_OFF;
+		outputs[ACTIVE_STEP + k].setVoltage(activeSteps[k] ? LVL_ON : LVL_OFF);
 	}
 
 	#ifdef DIGITAL_EXT
@@ -73,7 +73,7 @@ Z8KWidget::Z8KWidget(Z8K *module) : SequencerWidget(module)
 	box.size = Vec(34 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT);
 	SVGPanel *panel = new SVGPanel();
 	panel->box.size = box.size;
-	panel->setBackground(SVG::load(assetPlugin(pluginInstance, "res/modules/Z8KModule.svg")));
+	panel->setBackground(APP->window->loadSvg(asset::plugin(pluginInstance, "res/modules/Z8KModule.svg")));
 	addChild(panel);
 	addChild(createWidget<ScrewBlack>(Vec(RACK_GRID_WIDTH, 0)));
 	addChild(createWidget<ScrewBlack>(Vec(box.size.x - 2*RACK_GRID_WIDTH, 0)));
@@ -84,34 +84,36 @@ Z8KWidget::Z8KWidget(Z8K *module) : SequencerWidget(module)
 
 	for(int k = 0; k < 4; k++)
 	{
-		addInput(createPort<PJ301YPort>(Vec(mm2px(5.738), yncscape(82.210+k*dist_v,8.255)), PortWidget::INPUT, module, Z8K::RESET_1 + k));
-		addInput(createPort<PJ301BPort>(Vec(mm2px(16.544), yncscape(82.210+k*dist_v,8.255)), PortWidget::INPUT, module, Z8K::DIR_1 + k));
-		addInput(createPort<PJ301RPort>(Vec(mm2px(27.349), yncscape(82.210+k*dist_v,8.255)), PortWidget::INPUT, module, Z8K::CLOCK_1 + k));
+		addInput(createInput<PJ301YPort>(Vec(mm2px(5.738), yncscape(82.210+k*dist_v,8.255)), module, Z8K::RESET_1 + k));
+		addInput(createInput<PJ301BPort>(Vec(mm2px(16.544), yncscape(82.210+k*dist_v,8.255)), module, Z8K::DIR_1 + k));
+		addInput(createInput<PJ301RPort>(Vec(mm2px(27.349), yncscape(82.210+k*dist_v,8.255)), module, Z8K::CLOCK_1 + k));
 	}
 
 	for(int k = 0; k < 4; k++)
 	{
-		addInput(createPort<PJ301YPort>(Vec(mm2px(52.168+k*dist_h), yncscape(115.442,8.255)), PortWidget::INPUT, module, Z8K::RESET_A + k));
-		addInput(createPort<PJ301BPort>(Vec(mm2px(52.168+k*dist_h), yncscape(105.695,8.255)), PortWidget::INPUT, module, Z8K::DIR_A + k));
-		addInput(createPort<PJ301RPort>(Vec(mm2px(52.168+k*dist_h), yncscape(95.948,8.255)), PortWidget::INPUT, module, Z8K::CLOCK_A + k));
+		addInput(createInput<PJ301YPort>(Vec(mm2px(52.168+k*dist_h), yncscape(115.442,8.255)), module, Z8K::RESET_A + k));
+		addInput(createInput<PJ301BPort>(Vec(mm2px(52.168+k*dist_h), yncscape(105.695,8.255)), module, Z8K::DIR_A + k));
+		addInput(createInput<PJ301RPort>(Vec(mm2px(52.168+k*dist_h), yncscape(95.948,8.255)), module, Z8K::CLOCK_A + k));
 	}
 
-	addInput(createPort<PJ301YPort>( Vec(mm2px(135.416), yncscape(111.040,8.255)), PortWidget::INPUT, module, Z8K::RESET_VERT ));
-	addInput(createPort<PJ301BPort>( Vec(mm2px(143.995), yncscape(102.785,8.255)), PortWidget::INPUT, module, Z8K::DIR_VERT));
-	addInput(createPort<PJ301RPort>( Vec(mm2px(152.575), yncscape(111.040,8.255)), PortWidget::INPUT, module, Z8K::CLOCK_VERT ));
-	addOutput(createPort<PJ301GPort>(Vec(mm2px(161.154), yncscape(102.785,8.255)), PortWidget::OUTPUT, module, Z8K::CV_VERT) );
+	addInput(createInput<PJ301YPort>( Vec(mm2px(135.416), yncscape(111.040,8.255)), module, Z8K::RESET_VERT ));
+	addInput(createInput<PJ301BPort>( Vec(mm2px(143.995), yncscape(102.785,8.255)), module, Z8K::DIR_VERT));
+	addInput(createInput<PJ301RPort>( Vec(mm2px(152.575), yncscape(111.040,8.255)), module, Z8K::CLOCK_VERT ));
+	addOutput(createOutput<PJ301GPort>(Vec(mm2px(161.154), yncscape(102.785,8.255)), module, Z8K::CV_VERT) );
 
-	addInput(createPort<PJ301YPort> (Vec(mm2px(5.738), yncscape(10.941, 8.255)), PortWidget::INPUT, module, Z8K::RESET_HORIZ));
-	addInput(createPort<PJ301BPort> (Vec(mm2px(14.318), yncscape(2.685, 8.255)), PortWidget::INPUT, module, Z8K::DIR_HORIZ ));
-	addInput(createPort<PJ301RPort> (Vec(mm2px(22.897), yncscape(10.941, 8.255)), PortWidget::INPUT, module, Z8K::CLOCK_HORIZ));
-	addOutput(createPort<PJ301GPort>(Vec(mm2px(31.477), yncscape(2.685, 8.255)), PortWidget::OUTPUT, module, Z8K::CV_HORIZ));
+	addInput(createInput<PJ301YPort> (Vec(mm2px(5.738), yncscape(10.941, 8.255)), module, Z8K::RESET_HORIZ));
+	addInput(createInput<PJ301BPort> (Vec(mm2px(14.318), yncscape(2.685, 8.255)), module, Z8K::DIR_HORIZ ));
+	addInput(createInput<PJ301RPort> (Vec(mm2px(22.897), yncscape(10.941, 8.255)), module, Z8K::CLOCK_HORIZ));
+	addOutput(createOutput<PJ301GPort>(Vec(mm2px(31.477), yncscape(2.685, 8.255)), module, Z8K::CV_HORIZ));
 
 	for(int r = 0; r < 4; r++)
 	{
 		for(int c = 0; c < 4; c++)
 		{
 			int n = c + r * 4;
-			ParamWidget *pctrl = createParam<Davies1900hFixBlackKnob>(Vec(mm2px(51.533 + dist_h * c), yncscape(81.575+ dist_v * r,9.525)), module, Z8K::VOLTAGE_1 + n, 0.0, 1.0, 0.5);
+			if(module)
+				module->configParam(Z8K::VOLTAGE_1 + n, 0.0, 1.0, 0.5);
+			ParamWidget *pctrl = createParam<Davies1900hFixBlackKnob>(Vec(mm2px(51.533 + dist_h * c), yncscape(81.575+ dist_v * r,9.525)), module, Z8K::VOLTAGE_1 + n);
 			#ifdef OSCTEST_MODULE
 			sprintf(name, "/Knob%i", n + 1);
 			oscControl *oc = new oscControl(name);
@@ -152,11 +154,11 @@ Z8KWidget::Z8KWidget(Z8K *module) : SequencerWidget(module)
 			addChild(plight);
 
 			if(r == 3)
-				addOutput(createPort<PJ301GPort>(Vec(mm2px(52.168+ dist_h * c), yncscape(2.685, 8.255)), PortWidget::OUTPUT, module, Z8K::CV_A + c));
+				addOutput(createOutput<PJ301GPort>(Vec(mm2px(52.168+ dist_h * c), yncscape(2.685, 8.255)), module, Z8K::CV_A + c));
 
-			addOutput(createPort<PJ301WPort>(Vec(mm2px(57.362 + dist_h * c), yncscape(73.320 + dist_v * r, 8.255)), PortWidget::OUTPUT, module, Z8K::ACTIVE_STEP + n));
+			addOutput(createOutput<PJ301WPort>(Vec(mm2px(57.362 + dist_h * c), yncscape(73.320 + dist_v * r, 8.255)), module, Z8K::ACTIVE_STEP + n));
 		}
-		addOutput(createPort<PJ301GPort>(Vec(mm2px(161.154), yncscape(82.210+r*dist_v, 8.255)), PortWidget::OUTPUT, module, Z8K::CV_1 + r));
+		addOutput(createOutput<PJ301GPort>(Vec(mm2px(161.154), yncscape(82.210+r*dist_v, 8.255)), module, Z8K::CV_1 + r));
 	}
 
 	#ifdef DIGITAL_EXT

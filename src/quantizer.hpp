@@ -41,10 +41,11 @@ struct Quantizer : Module
 	{
 		NUM_LIGHTS
 	};
-	Quantizer() : Module(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS)
-	{		
+	Quantizer()
+	{
+		config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
 	}
-	void step() override;
+	void process(const ProcessArgs &args) override;
 
 private:
 	float quantize_out(Input &in, float transpose);

@@ -66,8 +66,9 @@ struct Renato : Module
 		NUM_LIGHTS = LED_1 + 16
 	};
 
-	Renato() : Module(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS)
+	Renato()
 	{
+		config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
 		#ifdef LAUNCHPAD
 		drv = new LaunchpadBindingDriver(this, Scene3, 2);
 		drv->SetAutoPageKey(LaunchpadKey::SESSION, 0);
@@ -91,7 +92,7 @@ struct Renato : Module
 	}
 	#endif
 
-	void step() override;
+	void process(const ProcessArgs &args) override;
 	void reset() override { load(); }
 
 	void dataFromJson(json_t *root) override { Module::dataFromJson(root); on_loaded(); }
@@ -116,11 +117,11 @@ struct Renato : Module
 private:
 	float getStatus(int pid, int iid)
 	{
-		return inputs[iid].normalize(0.0) + params[pid].value;
+		return inputs[iid].normalize(0.0) + params[pid].getValue();
 	}
 
 private:
-	SchmittTrigger resetTrigger;
+	dsp::SchmittTrigger resetTrigger;
 	void on_loaded();
 	void load();
 	void led(int n) { for(int k = 0; k < 16; k++) lights[LED_1 + k].value = k == n ? 10.0 : 0.0; }

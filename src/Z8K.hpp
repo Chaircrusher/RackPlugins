@@ -96,7 +96,7 @@ struct Z8K : Module
 	}
 	#endif
 
-	void step() override;
+	void process(const ProcessArgs &args) override;
 	void reset() override { load(); }
 
 	void dataFromJson(json_t *root) override { Module::dataFromJson(root); on_loaded(); }

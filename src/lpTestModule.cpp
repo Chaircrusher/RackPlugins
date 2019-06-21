@@ -4,25 +4,26 @@
 #include <string.h>
 
 
-void LaunchpadTest::step()
+void LaunchpadTest::process(const ProcessArgs &args)
 {
-	v_in = inputs[IN_V].value;
-	lights[LP_CONNECTED].value = params[LaunchpadTest::BTN].value > 0 ? 1.0 : 0.0;
+	v_in = inputs[IN_V].getVoltage();
+	lights[LP_CONNECTED].value = params[LaunchpadTest::BTN].getValue() > 0 ? 1.0 : 0.0;
 
-	outputs[KNOB_OUT].value = params[KNOB].value;
-	outputs[BTN_OUT].value = inputs[BTN].value;
-	outputs[SW_OUT].value = params[SW].value;
+	outputs[KNOB_OUT].setVoltage(params[KNOB].getValue());
+	outputs[BTN_OUT].setVoltage(inputs[BTN].getVoltage());
+	outputs[SW_OUT].setVoltage(params[SW].getValue());
 	drv->ProcessLaunchpad();
 }
 
-LaunchpadTestWidget::LaunchpadTestWidget(LaunchpadTest *module) : ModuleWidget(module)
+LaunchpadTestWidget::LaunchpadTestWidget(LaunchpadTest *module)
 {
+	setModule(module);
 	box.size = Vec(13 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT);
 
 	{
 		SVGPanel *panel = new SVGPanel();
 		panel->box.size = box.size;
-		panel->setBackground(SVG::load(assetPlugin(pluginInstance, "res/modules/test.svg")));
+		panel->setBackground(APP->window->loadSvg(asset::plugin(pluginInstance, "res/modules/test.svg")));
 		addChild(panel);
 	}
 
@@ -38,11 +39,13 @@ LaunchpadTestWidget::LaunchpadTestWidget(LaunchpadTest *module) : ModuleWidget(m
 	display->value = &module->v_in;
 	addChild(display);
 
-	addInput(createPort<PJ301RPort>(Vec(10, y), PortWidget::INPUT, module, LaunchpadTest::IN_V));
+	addInput(createInput<PJ301RPort>(Vec(10, y), module, LaunchpadTest::IN_V));
 	
 	y += 60;
 
-	ParamWidget *pctrl = createParam<PatternBtn>(Vec(10, y), module, LaunchpadTest::BTN, 0.0, 1.0, 0.0);
+	if(module)
+		module->configParam(0.0, 1.0, 0.0);
+	ParamWidget *pctrl = createParam<PatternBtn>(Vec(10, y), module, LaunchpadTest::BTN);
 	LaunchpadLed offColor;
 	LaunchpadLed onColor;
 	offColor.r_color = 20;
@@ -50,21 +53,25 @@ LaunchpadTestWidget::LaunchpadTestWidget(LaunchpadTest *module) : ModuleWidget(m
 	LaunchpadSwitch *sw1 = new LaunchpadSwitch(0, LaunchpadKey::R1C1, offColor, onColor);
 	module->drv->Add(sw1, pctrl);
 	addParam(pctrl);
-	addOutput(createPort<PJ301GPort>(Vec(150, y), PortWidget::OUTPUT, module, LaunchpadTest::BTN_OUT));
+	addOutput(createOutput<PJ301GPort>(Vec(150, y), module, LaunchpadTest::BTN_OUT));
 
 	y += 60;
 
 	LaunchpadKnob *pknob = new LaunchpadKnob(0, ILaunchpadPro::RC2Key(6, 6), LaunchpadLed::Rgb(20, 10, 10), LaunchpadLed::Rgb(60, 40, 40));
-	ParamWidget *pEna = createParam<Davies1900hBlackKnob>(Vec(10, y), module, LaunchpadTest::KNOB, 0.0, 5.0, 0.25);
+	if(module)
+		module->configParam(0.0, 5.0, 0.25);
+	ParamWidget *pEna = createParam<Davies1900hBlackKnob>(Vec(10, y), module, LaunchpadTest::KNOB);
 	module->drv->Add(pknob, pEna);
 	addParam(pEna);
-	addOutput(createPort<PJ301GPort>(Vec(150, y), PortWidget::OUTPUT, module, LaunchpadTest::KNOB_OUT));
+	addOutput(createOutput<PJ301GPort>(Vec(150, y), module, LaunchpadTest::KNOB_OUT));
 
 	y += 60;
 
-	pEna = createParam<BefacoSwitch>(Vec(10, y), module, LaunchpadTest::SW, 0.0, 2.0, 1.0);
+	if(module)
+		module->configParam(0.0, 2.0, 1.0);
+	pEna = createParam<BefacoSwitch>(Vec(10, y), module, LaunchpadTest::SW);
 	addParam(pEna);
-	addOutput(createPort<PJ301GPort>(Vec(150, y), PortWidget::OUTPUT, module, LaunchpadTest::SW_OUT));
+	addOutput(createOutput<PJ301GPort>(Vec(150, y), module, LaunchpadTest::SW_OUT));
 
 #ifdef DEBUG
 	info("RDY");

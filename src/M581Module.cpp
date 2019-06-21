@@ -27,20 +27,20 @@ void M581::_reset()
 	showCurStep(0, 0);
 }
 
-void M581::step()
+void M581::process(const ProcessArgs &args)
 {
-	if(resetTrigger.process(inputs[RESET].value))
+	if(resetTrigger.process(inputs[RESET].getVoltage()))
 	{
 		_reset();
 	} else
 	{
 		Timer.Step();
 
-		if(clockTrigger.process(inputs[CLOCK].value) && any())
+		if(clockTrigger.process(inputs[CLOCK].getVoltage()) && any())
 			beginNewStep();
 
-		outputs[CV].value = cvControl.Play(Timer.Elapsed());
-		outputs[GATE].value = gateControl.Play(&Timer, stepCounter.PulseCounter());
+		outputs[CV].setVoltage(cvControl.Play(Timer.Elapsed()));
+		outputs[GATE].setVoltage(gateControl.Play(&Timer, stepCounter.PulseCounter()));
 	}
 
 	#ifdef DIGITAL_EXT
@@ -104,7 +104,7 @@ M581Widget::M581Widget(M581 *module) : SequencerWidget(module)
 	box.size = Vec(29 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT);
 	SVGPanel *panel = new SVGPanel();
 	panel->box.size = box.size;
-	panel->setBackground(SVG::load(assetPlugin(pluginInstance, "res/modules/M581Module.svg")));
+	panel->setBackground(APP->window->loadSvg(asset::plugin(pluginInstance, "res/modules/M581Module.svg")));
 	addChild(panel);
 	addChild(createWidget<ScrewBlack>(Vec(RACK_GRID_WIDTH, 0)));
 	addChild(createWidget<ScrewBlack>(Vec(box.size.x - 2*RACK_GRID_WIDTH, 0)));
@@ -116,7 +116,9 @@ M581Widget::M581Widget(M581 *module) : SequencerWidget(module)
 	{
 		// page #0 (Session): step enable/disable; gate mode
 			  // step enable
-		ParamWidget *pwdg = createParam<CKSSThreeFix>(Vec(mm2px(14.151+k*dist_h), yncscape(11.744,10.0)), module, M581::STEP_ENABLE + k, 0.0, 2.0, 1.0);
+		if(module)
+			module->configParam(M581::STEP_ENABLE + k, 0.0, 2.0, 1.0);
+		ParamWidget *pwdg = createParam<CKSSThreeFix>(Vec(mm2px(14.151+k*dist_h), yncscape(11.744,10.0)), module, M581::STEP_ENABLE + k);
 		addParam(pwdg);
 		#ifdef LAUNCHPAD
 		LaunchpadRadio *radio = new LaunchpadRadio(0, ILaunchpadPro::RC2Key(5, k), 3, LaunchpadLed::Color(43), LaunchpadLed::Color(32));
@@ -129,7 +131,9 @@ M581Widget::M581Widget(M581 *module) : SequencerWidget(module)
 		#endif
 
 		// Gate switches
-		pwdg = createParam<VerticalSwitch>(Vec(mm2px(14.930 + k*dist_h), yncscape(39.306, 13.2)), module, M581::GATE_SWITCH + k, 0.0, 3.0, 2.0);
+		if(module)
+			module->configParam(M581::GATE_SWITCH + k, 0.0, 3.0, 2.0);
+		pwdg = createParam<VerticalSwitch>(Vec(mm2px(14.930 + k*dist_h), yncscape(39.306, 13.2)), module, M581::GATE_SWITCH + k);
 		addParam(pwdg);
 		#ifdef LAUNCHPAD
 		radio = new LaunchpadRadio(0, ILaunchpadPro::RC2Key(1, k), 4, LaunchpadLed::Color(11), LaunchpadLed::Color(17));
@@ -143,7 +147,9 @@ M581Widget::M581Widget(M581 *module) : SequencerWidget(module)
 
 		// page #1 (Note): Notes
 		// step notes
-		pwdg = createParam<BefacoSlidePotFix>(Vec(mm2px(14.943 + k*dist_h), yncscape(95.822, 27.517)), module, M581::STEP_NOTES + k, 0.0, 1.0, 0.5);
+		if(module)
+			module->configParam(M581::STEP_NOTES + k, 0.0, 1.0, 0.5);
+		pwdg = createParam<BefacoSlidePotFix>(Vec(mm2px(14.943 + k*dist_h), yncscape(95.822, 27.517)), module, M581::STEP_NOTES + k);
 		addParam(pwdg);
 		#ifdef LAUNCHPAD
 		LaunchpadKnob *pknob = new LaunchpadKnob(1, ILaunchpadPro::RC2Key(6, k), LaunchpadLed::Rgb(10, 0, 0), LaunchpadLed::Rgb(63, 63, 63));
@@ -157,7 +163,9 @@ M581Widget::M581Widget(M581 *module) : SequencerWidget(module)
 
 		//page #2 (Device): Counters
 		// Counter switches
-		pwdg = createParam<CounterSwitch>(Vec(mm2px(14.93 + k*dist_h), yncscape(60.897, 24.0)), module, M581::COUNTER_SWITCH + k, 0.0, 7.0, 0.0);
+		if(module)
+			module->configParam(M581::COUNTER_SWITCH + k, 0.0, 7.0, 0.0);
+		pwdg = createParam<CounterSwitch>(Vec(mm2px(14.93 + k*dist_h), yncscape(60.897, 24.0)), module, M581::COUNTER_SWITCH + k);
 		addParam(pwdg);
 		#ifdef LAUNCHPAD
 		radio = new LaunchpadRadio(2, ILaunchpadPro::RC2Key(0, k), 8, LaunchpadLed::Color(1), LaunchpadLed::Color(58));
@@ -198,7 +206,9 @@ M581Widget::M581Widget(M581 *module) : SequencerWidget(module)
 	}
 
 	// Gate time
-	ParamWidget *pwdg = createParam<Davies1900hFixWhiteKnob>(Vec(mm2px(121.032), yncscape(112.942, 9.525)), module, M581::GATE_TIME, 0.005, 1.0, 0.25);
+	if(module)
+		module->configParam(M581::GATE_TIME, 0.005, 1.0, 0.25);
+	ParamWidget *pwdg = createParam<Davies1900hFixWhiteKnob>(Vec(mm2px(121.032), yncscape(112.942, 9.525)), module, M581::GATE_TIME);
 	#ifdef OSCTEST_MODULE
 	sprintf(name, "/GateTime");
 	oscControl *oc = new oscControl(name);
@@ -207,7 +217,9 @@ M581Widget::M581Widget(M581 *module) : SequencerWidget(module)
 	addParam(pwdg);    // in sec
 
 	// Slide time
-	pwdg = createParam<Davies1900hFixWhiteKnob>(Vec(mm2px(121.032), yncscape(95.480, 9.525)), module, M581::SLIDE_TIME, 0.005, 2.0, 0.5);
+	if(module)
+		module->configParam(M581::SLIDE_TIME, 0.005, 2.0, 0.5);
+	pwdg = createParam<Davies1900hFixWhiteKnob>(Vec(mm2px(121.032), yncscape(95.480, 9.525)), module, M581::SLIDE_TIME);
 	addParam(pwdg); // in sec
 	#ifdef OSCTEST_MODULE
 	sprintf(name, "/SlideTime");
@@ -216,7 +228,9 @@ M581Widget::M581Widget(M581 *module) : SequencerWidget(module)
 	#endif
 
 	// volt fondo scala
-	pwdg = createParam<CKSSFix>(Vec(mm2px(7.066), yncscape(114.224, 5.460)), module, M581::MAXVOLTS, 0.0, 1.0, 1.0);
+	if(module)
+		module->configParam(M581::MAXVOLTS, 0.0, 1.0, 1.0);
+	pwdg = createParam<CKSSFix>(Vec(mm2px(7.066), yncscape(114.224, 5.460)), module, M581::MAXVOLTS);
 	addParam(pwdg);
 	#ifdef OSCTEST_MODULE
 	sprintf(name, "/Voltage");
@@ -225,7 +239,9 @@ M581Widget::M581Widget(M581 *module) : SequencerWidget(module)
 	#endif
 
 	// step div
-	pwdg = createParam<VerticalSwitch>(Vec(mm2px(123.494), yncscape(75.482, 13.2)), module, M581::STEP_DIV, 0.0, 3.0, 0.0);
+	if(module)
+		module->configParam(M581::STEP_DIV, 0.0, 3.0, 0.0);
+	pwdg = createParam<VerticalSwitch>(Vec(mm2px(123.494), yncscape(75.482, 13.2)), module, M581::STEP_DIV);
 	addParam(pwdg);
 	#ifdef OSCTEST_MODULE
 	sprintf(name, "/StepDiv");
@@ -234,13 +250,13 @@ M581Widget::M581Widget(M581 *module) : SequencerWidget(module)
 	#endif
 
 	// input
-	addInput(createPort<PJ301RPort>(Vec(mm2px(113.864), yncscape(22.128, 8.255)), PortWidget::INPUT, module, M581::CLOCK));
-	addInput(createPort<PJ301YPort>(Vec(mm2px(129.469), yncscape(22.128, 8.255)), PortWidget::INPUT, module, M581::RESET));
+	addInput(createInput<PJ301RPort>(Vec(mm2px(113.864), yncscape(22.128, 8.255)), module, M581::CLOCK));
+	addInput(createInput<PJ301YPort>(Vec(mm2px(129.469), yncscape(22.128, 8.255)), module, M581::RESET));
 	
 
 	// OUTPUTS
-	addOutput(createPort<PJ301GPort>(Vec(mm2px(113.864), yncscape(7.228, 8.255)), PortWidget::OUTPUT, module, M581::CV));
-	addOutput(createPort<PJ301WPort>(Vec(mm2px(129.469), yncscape(7.228, 8.255)), PortWidget::OUTPUT, module, M581::GATE));
+	addOutput(createOutput<PJ301GPort>(Vec(mm2px(113.864), yncscape(7.228, 8.255)), module, M581::CV));
+	addOutput(createOutput<PJ301WPort>(Vec(mm2px(129.469), yncscape(7.228, 8.255)), module, M581::GATE));
 
 	// # STEPS
 	SigDisplayWidget *display2 = new SigDisplayWidget(2);
@@ -248,7 +264,9 @@ M581Widget::M581Widget(M581 *module) : SequencerWidget(module)
 	display2->box.size = Vec(30, 20);
 	display2->value = module->getAddress(1);
 	addChild(display2);
-	pwdg = createParam<Davies1900hFixRedKnob>(Vec(mm2px(113.229), yncscape(38.851, 9.525)), module, M581::NUM_STEPS, 1.0, 31.0, 8.0);
+	if(module)
+		module->configParam(M581::NUM_STEPS, 1.0, 31.0, 8.0);
+	pwdg = createParam<Davies1900hFixRedKnob>(Vec(mm2px(113.229), yncscape(38.851, 9.525)), module, M581::NUM_STEPS);
 	((Davies1900hKnob *)pwdg)->snap = true;
 	addParam(pwdg);
 
@@ -259,7 +277,9 @@ M581Widget::M581Widget(M581 *module) : SequencerWidget(module)
 	display->mode = module->getAddress(0);
 	addChild(display);
 
-	pwdg = createParam<Davies1900hFixBlackKnob>(Vec(mm2px(113.229), yncscape(58.259,9.525)), module, M581::RUN_MODE, 0.0, 4.0, 0.0);
+	if(module)
+		module->configParam(M581::RUN_MODE, 0.0, 4.0, 0.0);
+	pwdg = createParam<Davies1900hFixBlackKnob>(Vec(mm2px(113.229), yncscape(58.259,9.525)), module, M581::RUN_MODE);
 	((Davies1900hKnob *)pwdg)->snap = true;
 	addParam(pwdg);
 
@@ -288,13 +308,13 @@ void M581Widget::onMenu(int action)
 	}
 }
 
-bool ParamGetter::IsEnabled(int numstep) { return pModule->params[M581::STEP_ENABLE + numstep].value > 0.0; }
-bool ParamGetter::IsSlide(int numstep) { return pModule->params[M581::STEP_ENABLE + numstep].value > 1.0; }
-int ParamGetter::GateMode(int numstep) { return std::round(pModule->params[M581::GATE_SWITCH + numstep].value); }
-int ParamGetter::PulseCount(int numstep) { return std::round(pModule->params[M581::COUNTER_SWITCH + numstep].value); }
-float ParamGetter::Note(int numstep) { return pModule->params[M581::STEP_NOTES + numstep].value * (pModule->params[M581::MAXVOLTS].value > 0 ? 5.0 : 3.0); }
-int ParamGetter::RunMode() { return std::round(pModule->params[M581::RUN_MODE].value); }
-int ParamGetter::NumSteps() { return std::round(pModule->params[M581::NUM_STEPS].value); }
-float ParamGetter::SlideTime() { return pModule->params[M581::SLIDE_TIME].value; }
-float ParamGetter::GateTime() { return pModule->params[M581::GATE_TIME].value; }
-int ParamGetter::StepDivision() { return std::round(pModule->params[M581::STEP_DIV].value) + 1; }
+bool ParamGetter::IsEnabled(int numstep) { return pModule->params[M581::STEP_ENABLE + numstep].getValue() > 0.0; }
+bool ParamGetter::IsSlide(int numstep) { return pModule->params[M581::STEP_ENABLE + numstep].getValue() > 1.0; }
+int ParamGetter::GateMode(int numstep) { return std::round(pModule->params[M581::GATE_SWITCH + numstep].getValue()); }
+int ParamGetter::PulseCount(int numstep) { return std::round(pModule->params[M581::COUNTER_SWITCH + numstep].getValue()); }
+float ParamGetter::Note(int numstep) { return pModule->params[M581::STEP_NOTES + numstep].getValue() * (pModule->params[M581::MAXVOLTS].getValue() > 0 ? 5.0 : 3.0); }
+int ParamGetter::RunMode() { return std::round(pModule->params[M581::RUN_MODE].getValue()); }
+int ParamGetter::NumSteps() { return std::round(pModule->params[M581::NUM_STEPS].getValue()); }
+float ParamGetter::SlideTime() { return pModule->params[M581::SLIDE_TIME].getValue(); }
+float ParamGetter::GateTime() { return pModule->params[M581::GATE_TIME].getValue(); }
+int ParamGetter::StepDivision() { return std::round(pModule->params[M581::STEP_DIV].getValue()) + 1; }

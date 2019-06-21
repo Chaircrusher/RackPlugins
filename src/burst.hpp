@@ -48,11 +48,12 @@ struct Burst : Module
 		NUM_LIGHTS = LEDOUT_1 + NUM_BURST_PORTS
 	};
 
-	Burst() : Module(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS)
-	{		
+	Burst()
+	{
+		config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
 	}
 
-	void step() override;
+	void process(const ProcessArgs &args) override;
 	void reset() override { load(); }
 	void dataFromJson(json_t *root) override { Module::dataFromJson(root); on_loaded(); }
 	json_t *dataToJson() override
@@ -69,13 +70,13 @@ private:
 	void prepare_step();
 	void next_step();
 	void end_step();
-	void port(int n, bool on) { lights[LEDOUT_1 + n].value = outputs[OUT_1 + n].value = on ? LVL_ON : LVL_OFF; }
+	void port(int n, bool on) { lights[LEDOUT_1 + n].value = outputs[OUT_1 + n].setVoltage(on ? LVL_ON : LVL_OFF); }
 	void invert_port(int n) { port(n, outputs[OUT_1 + n].value < LVL_ON); }
 
 private:
 	SchmittTrigger2 clock;
-	SchmittTrigger trigger;
-	SchmittTrigger resetTrigger;
+	dsp::SchmittTrigger trigger;
+	dsp::SchmittTrigger resetTrigger;
 	bool active;
 	bool trigger_pending;
 	enum MODE

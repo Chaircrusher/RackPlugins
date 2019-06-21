@@ -36,8 +36,9 @@ struct Spiralone : Module
 		NUM_LIGHTS = (LED_SEQUENCE_1 + TOTAL_STEPS) * NUM_SEQUENCERS
 	};
 
-	Spiralone() : Module(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS)
+	Spiralone()
 	{
+		config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
 		#ifdef LAUNCHPAD
 		drv = new LaunchpadBindingDriver(this, Scene5, 1);
 		#endif
@@ -60,7 +61,7 @@ struct Spiralone : Module
 	}
 	#endif
 
-	void step() override;
+	void process(const ProcessArgs &args) override;
 	void reset() override { load(); }
 
 	void dataFromJson(json_t *root) override { Module::dataFromJson(root); on_loaded(); }
@@ -85,5 +86,5 @@ private:
 	void load();
 
 	spiraloneSequencer sequencer[NUM_SEQUENCERS];
-	SchmittTrigger masterReset;
+	dsp::SchmittTrigger masterReset;
 };

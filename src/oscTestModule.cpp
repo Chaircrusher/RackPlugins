@@ -1,7 +1,7 @@
 #include "oscTestModule.hpp"
 #ifdef OSCTEST_MODULE
 
-void OscTest::step()
+void OscTest::process(const ProcessArgs &args)
 {
 	drv->ProcessOSC();
 	connected = drv->Connected() ? 1.0 : 0.0;
@@ -10,11 +10,12 @@ void OscTest::step()
 		lasttime = clock();
 		lights[LED1].value = lights[LED1].value > 0 ? 0 : 10;
 	}
-	outputs[OUT_1].value = params[BTN1].value > 0 ? LVL_ON : LVL_OFF;
+	outputs[OUT_1].setVoltage(params[BTN1].getValue() > 0 ? LVL_ON : LVL_OFF);
 }
 
-OscTestWidget::OscTestWidget(OscTest *module) : ModuleWidget(module)
+OscTestWidget::OscTestWidget(OscTest *module)
 {
+	setModule(module);
 	box.size = Vec(8 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT);
 
 	{
@@ -39,8 +40,10 @@ OscTestWidget::OscTestWidget(OscTest *module) : ModuleWidget(module)
 	module->drv->Add(oc, plight);
 	addChild(plight);
 	
-	addOutput(createPort<PJ301MPort>(Vec(50, 100), PortWidget::OUTPUT, module, OscTest::OUT_1 ));
-	pctrl = createParam<CKSS>(Vec(20, 20), module, OscTest::BTN1, 0.0, 1.0, 0.0);
+	addOutput(createOutput<PJ301MPort>(Vec(50, 100), module, OscTest::OUT_1 ));
+	if(module)
+		module->configParam(0.0, 1.0, 0.0);
+	pctrl = createParam<CKSS>(Vec(20, 20), module, OscTest::BTN1);
 	oc = new oscControl("/Switch1");
 	module->drv->Add(oc, pctrl);
 	addParam(pctrl);

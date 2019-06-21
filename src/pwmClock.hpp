@@ -5,8 +5,8 @@ struct UPSWITCH : SVGSwitch, MomentarySwitch
 {
 	UPSWITCH()
 	{
-		addFrame(SVG::load(assetPlugin(pluginInstance, "res/upswitch_0.svg")));
-		addFrame(SVG::load(assetPlugin(pluginInstance, "res/upswitch_1.svg")));
+		addFrame(APP->window->loadSvg(asset::plugin(pluginInstance, "res/upswitch_0.svg")));
+		addFrame(APP->window->loadSvg(asset::plugin(pluginInstance, "res/upswitch_1.svg")));
 	}
 };
 
@@ -14,8 +14,8 @@ struct DNSWITCH : SVGSwitch, MomentarySwitch
 {
 	DNSWITCH()
 	{
-		addFrame(SVG::load(assetPlugin(pluginInstance, "res/dnswitch_0.svg")));
-		addFrame(SVG::load(assetPlugin(pluginInstance, "res/dnswitch_1.svg")));
+		addFrame(APP->window->loadSvg(asset::plugin(pluginInstance, "res/dnswitch_0.svg")));
+		addFrame(APP->window->loadSvg(asset::plugin(pluginInstance, "res/dnswitch_1.svg")));
 	}
 };
 
@@ -23,7 +23,7 @@ struct Rogan1PSRedSmall : Rogan
 {
 	Rogan1PSRedSmall()
 	{
-		setSVG(SVG::load(assetPlugin(pluginInstance, "res/Rogan2PSRedSmall.svg")));
+		setSVG(APP->window->loadSvg(asset::plugin(pluginInstance, "res/Rogan2PSRedSmall.svg")));
 	}
 };
 
@@ -40,7 +40,7 @@ struct SA_TIMER	//sample accurate version
 {
 	float Reset()
 	{
-		prevTime = curTime = engineGetSampleTime();
+		prevTime = curTime = args.sampleTime;
 		return Begin();
 	}
 
@@ -55,7 +55,7 @@ struct SA_TIMER	//sample accurate version
 
 	float Step()
 	{
-		curTime += engineGetSampleTime();
+		curTime += args.sampleTime;
 		float deltaTime = curTime - prevTime;
 		prevTime = curTime;
 		totalPulseTime += deltaTime;
@@ -102,12 +102,12 @@ struct PwmClock : Module
 		NUM_LIGHTS
 	};
 
-	PwmClock() : Module(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS)
+	PwmClock()
 	{
-
+		config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
 		on_loaded();
 	}
-	void step() override;
+	void process(const ProcessArgs &args) override;
 
 	json_t *dataToJson() override
 	{
@@ -137,8 +137,8 @@ struct PwmClock : Module
 	float swing;
 
 private:
-	SchmittTrigger btnup;
-	SchmittTrigger btndwn;
+	dsp::SchmittTrigger btnup;
+	dsp::SchmittTrigger btndwn;
 	PwmClockWidget *pWidget;
 	uint32_t tick = UINT32_MAX;
 	int bpm_integer = 120;

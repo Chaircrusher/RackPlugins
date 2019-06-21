@@ -1,23 +1,24 @@
 #include "common.hpp"
 #include "attenuator.hpp"
 
-void Attenuator::step()
+void Attenuator::process(const ProcessArgs &args)
 {
 	for(int k = 0; k < NUM_ATTENUATORS; k++)
 	{
-		if(outputs[OUT_1 + k].active)
-			outputs[OUT_1 + k].value = inputs[IN_1 + k].value * params[ATT_1 + k].value;
+		if(outputs[OUT_1 + k].isConnected())
+			outputs[OUT_1 + k].setVoltage(inputs[IN_1 + k].getVoltage() * params[ATT_1 + k].getValue());
 	}
 }
 
-AttenuatorWidget::AttenuatorWidget(Attenuator *module) : ModuleWidget(module)
+AttenuatorWidget::AttenuatorWidget(Attenuator *module)
 {
+	setModule(module);
 	box.size = Vec(8 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT);
 
 	{
 		SVGPanel *panel = new SVGPanel();
 		panel->box.size = box.size;
-		panel->setBackground(SVG::load(assetPlugin(pluginInstance, "res/modules/attenuator.svg")));		
+		panel->setBackground(APP->window->loadSvg(asset::plugin(pluginInstance, "res/modules/attenuator.svg")));		
 		addChild(panel);
 	}
 
@@ -34,9 +35,11 @@ AttenuatorWidget::AttenuatorWidget(Attenuator *module) : ModuleWidget(module)
 	
 	for(int k = 0; k < NUM_ATTENUATORS; k++)
 	{
-		addInput(createPort<PJ301GRPort>(Vec(in_x, y), PortWidget::INPUT, module, Attenuator::IN_1 + k));
-		addParam(createParam<Davies1900hFixWhiteKnobSmall>(Vec(pot_x, ypot), module, Attenuator::ATT_1+k, 0.0, 1.0, 1.0));
-		addOutput(createPort<PJ301GPort>(Vec(out_x, y), PortWidget::OUTPUT, module, Attenuator::OUT_1+k));
+		addInput(createInput<PJ301GRPort>(Vec(in_x, y), module, Attenuator::IN_1 + k));
+		if(module)
+			module->configParam(Attenuator::ATT_1+k,0.0,1.0,1.0);
+		addParam(createParam<Davies1900hFixWhiteKnobSmall>(Vec(pot_x, ypot), module, Attenuator::ATT_1+k));
+		addOutput(createOutput<PJ301GPort>(Vec(out_x, y), module, Attenuator::OUT_1+k));
 		y += delta_y;
 		ypot += delta_y;
 	}

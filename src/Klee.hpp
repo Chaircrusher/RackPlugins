@@ -70,8 +70,9 @@ struct Klee : Module
 		NUM_LIGHTS
 	};
 
-	Klee() : Module(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS)
+	Klee()
 	{
+		config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
 		#ifdef LAUNCHPAD
 		drv = new LaunchpadBindingDriver(this, Scene1, 1);
 		#endif
@@ -101,7 +102,7 @@ struct Klee : Module
 
 		return rootJ;
 	}
-	void step() override;
+	void process(const ProcessArgs &args) override;
 	void reset() override { load(); }
 	void randomize() override { load(); }
 
@@ -128,9 +129,9 @@ private:
 	void check_triggers(float deltaTime);
 	bool isSwitchOn(int ptr);
 	int getValue3(int k);
-	SchmittTrigger loadTrigger;
+	dsp::SchmittTrigger loadTrigger;
 	SchmittTrigger2 clockTrigger;
-	PulseGenerator triggers[3];
+	dsp::PulseGenerator triggers[3];
 
 	union
 	{

@@ -42,10 +42,11 @@ struct Boole : Module
 		NUM_LIGHTS = LED_1 + 3* NUM_BOOL_OP-1
 	};
 
-	Boole() : Module(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS)
-	{		
+	Boole()
+	{
+		config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
 	}
-	void step() override;
+	void process(const ProcessArgs &args) override;
 
 private:
 	bool process(int num_op, int index);

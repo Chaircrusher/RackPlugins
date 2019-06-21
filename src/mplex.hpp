@@ -45,8 +45,9 @@ struct Mplex : Module
 		NUM_LIGHTS = LED_1 + NUM_MPLEX_INPUTS
 	};
 
-	Mplex() : Module(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS)
-	{		
+	Mplex()
+	{
+		config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
 		load();
 	}
 
@@ -57,11 +58,11 @@ struct Mplex : Module
 
 		return rootJ;
 	}
-	void step() override;
+	void process(const ProcessArgs &args) override;
 	void reset() override { load(); }
 	void randomize() override 
 	{
-		set_output((int)roundf(rescale(randomUniform(), 0.0, 1.0, 0, NUM_MPLEX_INPUTS)));
+		set_output((int)roundf(rescale(random::uniform(), 0.0, 1.0, 0, NUM_MPLEX_INPUTS)));
 	}
 
 private:
@@ -70,6 +71,6 @@ private:
 	void set_output(int n);
 
 	int cur_sel;
-	SchmittTrigger upTrigger;
-	SchmittTrigger dnTrigger;
+	dsp::SchmittTrigger upTrigger;
+	dsp::SchmittTrigger dnTrigger;
 };

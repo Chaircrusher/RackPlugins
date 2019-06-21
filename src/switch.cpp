@@ -1,35 +1,36 @@
 #include "common.hpp"
 #include "switch.hpp"
 
-void Switch::step()
+void Switch::process(const ProcessArgs &args)
 {
 	for(int k = 0; k < NUM_SWITCHES; k++)
 	{
-		if(outputs[OUT_1 + k].active && inputs[IN_1 + k].active)
+		if(outputs[OUT_1 + k].isConnected() && inputs[IN_1 + k].isConnected())
 		{
 			if(getSwitch(k))
 			{
 				lights[LED_1 + k].value = 5;;
-				outputs[OUT_1 + k].value = inputs[IN_1 + k].value;
+				outputs[OUT_1 + k].setVoltage(inputs[IN_1 + k].getVoltage());
 			} else
 			{
-				lights[LED_1 + k].value = outputs[OUT_1 + k].value = 0;
+				lights[LED_1 + k].value = outputs[OUT_1 + k].setVoltage(0);
 			}
 		} else
 		{
-			lights[LED_1 + k].value = outputs[OUT_1 + k].value = 0;
+			lights[LED_1 + k].value = outputs[OUT_1 + k].setVoltage(0);
 		}
 	}
 }
 
-SwitchWidget::SwitchWidget(Switch *module) : ModuleWidget(module)
+SwitchWidget::SwitchWidget(Switch *module)
 {
+	setModule(module);
 	box.size = Vec(10 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT);
 
 	{
 		SVGPanel *panel = new SVGPanel();
 		panel->box.size = box.size;
-		panel->setBackground(SVG::load(assetPlugin(pluginInstance, "res/modules/Switch.svg")));		
+		panel->setBackground(APP->window->loadSvg(asset::plugin(pluginInstance, "res/modules/Switch.svg")));		
 		addChild(panel);
 	}
 
@@ -50,11 +51,13 @@ SwitchWidget::SwitchWidget(Switch *module) : ModuleWidget(module)
 	
 	for(int k = 0; k < NUM_SWITCHES; k++)
 	{
-		addInput(createPort<PJ301GRPort>(Vec(in_x, yncscape(y, 8.255)), PortWidget::INPUT, module, Switch::IN_1 + k));
-		addInput(createPort<PJ301BPort>(Vec(mod_x, yncscape(y1, 8.255)), PortWidget::INPUT, module, Switch::MOD_1 + k));
-		addParam(createParam<NKK2>(Vec(sw_x, yncscape(ysw, 7.336)), module, Switch::SW_1+k, 0.0, 1.0, 0.0));
+		addInput(createInput<PJ301GRPort>(Vec(in_x, yncscape(y, 8.255)), module, Switch::IN_1 + k));
+		addInput(createInput<PJ301BPort>(Vec(mod_x, yncscape(y1, 8.255)), module, Switch::MOD_1 + k));
+		if(module)
+			module->configParam(Switch::SW_1+k, 0.0, 1.0, 0.0);
+		addParam(createParam<NKK2>(Vec(sw_x, yncscape(ysw, 7.336)), module, Switch::SW_1+k));
 		addChild(createLight<SmallLight<RedLight>>(Vec(led_x, yncscape(yled, 2.176)), module, Switch::LED_1 + k ));
-		addOutput(createPort<PJ301GPort>(Vec(out_x, yncscape(y, 8.255)), PortWidget::OUTPUT, module, Switch::OUT_1+k));
+		addOutput(createOutput<PJ301GPort>(Vec(out_x, yncscape(y, 8.255)), module, Switch::OUT_1+k));
 		y += delta_y;
 		y1 += delta_y;
 		ysw += delta_y;

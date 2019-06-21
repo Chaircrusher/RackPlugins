@@ -1,7 +1,6 @@
 #pragma once
 //#define DEBUG
 #include "rack.hpp"
-#include "dsp/digital.hpp"
 #include <algorithm>
 #include <sstream>
 #include <iomanip>
@@ -40,13 +39,13 @@ struct _davies1900base : Davies1900hKnob
 {
 	_davies1900base(const char *res) 
 	{
-		setSVG(SVG::load(assetPlugin(pluginInstance, res)));
+		setSvg(APP->window->loadSvg(asset::plugin(pluginInstance, res)));
 	}
 
 	void randomize() override
 	{
 		if(snap)
-			setValue(roundf(rescale(randomUniform(), 0.0, 1.0, minValue, maxValue)));
+			setValue(roundf(rescale(random::uniform(), 0.0, 1.0, minAngle, maxAngle)));
 		else
 			Davies1900hKnob::randomize();
 	}
@@ -76,7 +75,7 @@ struct WhiteLight : GrayModuleLightWidget
 {
 	WhiteLight()
 	{
-		addBaseColor(COLOR_WHITE);
+		addBaseColor(componentlibrary::SCHEME_WHITE);
 	}
 };
 
@@ -84,7 +83,7 @@ struct _ioPort : SVGPort
 {
 	_ioPort(const char *res)
 	{
-		background->svg = SVG::load(assetPlugin(pluginInstance, res));
+		background->svg = APP->window->loadSvg(asset::plugin(pluginInstance, res));
 		background->wrap();
 		box.size = background->box.size;
 	}
@@ -151,38 +150,38 @@ struct CL1362WPort : _ioPort
 
 struct BefacoPushBig : SVGSwitch, MomentarySwitch {
 	BefacoPushBig() {
-		addFrame(SVG::load(assetPlugin(pluginInstance, "res/BefacoPush_0big.svg")));
-		addFrame(SVG::load(assetPlugin(pluginInstance, "res/BefacoPush_1big.svg")));
+		addFrame(APP->window->loadSvg(asset::plugin(pluginInstance, "res/BefacoPush_0big.svg")));
+		addFrame(APP->window->loadSvg(asset::plugin(pluginInstance, "res/BefacoPush_1big.svg")));
 	}
 };
 
 struct CKSSFix : SVGSwitch, ToggleSwitch {
 	CKSSFix() {
-		addFrame(SVG::load(assetPlugin(pluginInstance, "res/CKSS_0.svg")));
-		addFrame(SVG::load(assetPlugin(pluginInstance, "res/CKSS_1.svg")));
+		addFrame(APP->window->loadSvg(asset::plugin(pluginInstance, "res/CKSS_0.svg")));
+		addFrame(APP->window->loadSvg(asset::plugin(pluginInstance, "res/CKSS_1.svg")));
 	}
 	void randomize() override
 	{
-		setValue(roundf(rescale(randomUniform(), 0.0, 1.0, minValue, maxValue)));
+		setValue(roundf(rescale(random::uniform(), 0.0, 1.0, minValue, maxValue)));
 	}
 };
 
 struct CKSSThreeFix : SVGSwitch, ToggleSwitch {
 	CKSSThreeFix() {
-		addFrame(SVG::load(assetPlugin(pluginInstance, "res/CKSSThree_0.svg")));
-		addFrame(SVG::load(assetPlugin(pluginInstance, "res/CKSSThree_1.svg")));
-		addFrame(SVG::load(assetPlugin(pluginInstance, "res/CKSSThree_2.svg")));
+		addFrame(APP->window->loadSvg(asset::plugin(pluginInstance, "res/CKSSThree_0.svg")));
+		addFrame(APP->window->loadSvg(asset::plugin(pluginInstance, "res/CKSSThree_1.svg")));
+		addFrame(APP->window->loadSvg(asset::plugin(pluginInstance, "res/CKSSThree_2.svg")));
 	}
 	void randomize() override
 	{
-		setValue(roundf(rescale(randomUniform(), 0.0, 1.0, minValue, maxValue)));
+		setValue(roundf(rescale(random::uniform(), 0.0, 1.0, minValue, maxValue)));
 	}
 };
 
 struct TL1105Sw : SVGSwitch, ToggleSwitch {
 	TL1105Sw() {
-		addFrame(SVG::load(assetPlugin(pluginInstance, "res/TL1105_0.svg")));
-		addFrame(SVG::load(assetPlugin(pluginInstance, "res/TL1105_1.svg")));
+		addFrame(APP->window->loadSvg(asset::plugin(pluginInstance, "res/TL1105_0.svg")));
+		addFrame(APP->window->loadSvg(asset::plugin(pluginInstance, "res/TL1105_1.svg")));
 	}
 };
 
@@ -238,14 +237,14 @@ struct SchmittTrigger2
 struct NKK2 : SVGSwitch, ToggleSwitch
 {
 	NKK2() {
-		addFrame(SVG::load(assetPlugin(pluginInstance, "res/NKK_0.svg")));
-		addFrame(SVG::load(assetPlugin(pluginInstance, "res/NKK_1.svg")));
-		addFrame(SVG::load(assetPlugin(pluginInstance, "res/NKK_2.svg")));
+		addFrame(APP->window->loadSvg(asset::plugin(pluginInstance, "res/NKK_0.svg")));
+		addFrame(APP->window->loadSvg(asset::plugin(pluginInstance, "res/NKK_1.svg")));
+		addFrame(APP->window->loadSvg(asset::plugin(pluginInstance, "res/NKK_2.svg")));
 	}
 
 	void randomize() override
 	{
-		setValue(roundf(rescale(randomUniform(), 0.0, 1.0, minValue, maxValue)));
+		setValue(roundf(rescale(random::uniform(), 0.0, 1.0, minValue, maxValue)));
 	}
 };
 
@@ -253,7 +252,7 @@ struct BefacoSnappedSwitch : SVGSwitch, ToggleSwitch
 {
 	void randomize() override
 	{
-		if(randomUniform() >= 0.5)
+		if(random::uniform() >= 0.5)
 			setValue(1.0);
 		else
 			setValue(0.0);
@@ -261,8 +260,8 @@ struct BefacoSnappedSwitch : SVGSwitch, ToggleSwitch
 
 	BefacoSnappedSwitch()
 	{
-		addFrame(SVG::load(assetPlugin(pluginInstance, "res/BefacoSwitch_0.svg")));
-		addFrame(SVG::load(assetPlugin(pluginInstance, "res/BefacoSwitch_2.svg")));
+		addFrame(APP->window->loadSvg(asset::plugin(pluginInstance, "res/BefacoSwitch_0.svg")));
+		addFrame(APP->window->loadSvg(asset::plugin(pluginInstance, "res/BefacoSwitch_2.svg")));
 	}
 };
 
@@ -275,15 +274,15 @@ struct VerticalSwitch : SVGFader
 		snap = true;
 		maxHandlePos = Vec(-mm2px(2.3-2.3/2.0), 0);
 		minHandlePos = Vec(-mm2px(2.3-2.3/2.0),mm2px(13-2.8));
-		background->svg = SVG::load(assetPlugin(pluginInstance, "res/counterSwitchShort.svg"));
+		background->svg = APP->window->loadSvg(asset::plugin(pluginInstance, "res/counterSwitchShort.svg"));
 		background->wrap();
 		background->box.pos = Vec(0, 0);
 		box.size = background->box.size;
-		handle->svg = SVG::load(assetPlugin(pluginInstance, "res/counterSwitchPotHandle.svg"));
+		handle->svg = APP->window->loadSvg(asset::plugin(pluginInstance, "res/counterSwitchPotHandle.svg"));
 		handle->wrap();
 	}
 
-	void randomize() override { setValue(roundf(randomUniform() * maxValue)); }
+	void randomize() override { setValue(roundf(random::uniform() * maxValue)); }
 
 };
 
@@ -307,7 +306,10 @@ private:
 class SequencerWidget : public ModuleWidget
 {
 protected:
-	SequencerWidget(Module *module) : ModuleWidget(module) 	{}
+	SequencerWidget(Module *module)
+		{
+			setModule(module);
+		}
 	float yncscape(float y, float height)
 	{
 		return RACK_GRID_HEIGHT - mm2px(y + height);
@@ -352,19 +354,19 @@ struct DigitalLed : SVGWidget
 
 	DigitalLed(int x, int y, float *pVal)
 	{
-		frames.push_back(SVG::load(assetPlugin(pluginInstance, "res/digitalLed_off.svg")));
-		frames.push_back(SVG::load(assetPlugin(pluginInstance, "res/digitalLed_on.svg")));
+		frames.push_back(APP->window->loadSvg(asset::plugin(pluginInstance, "res/digitalLed_off.svg")));
+		frames.push_back(APP->window->loadSvg(asset::plugin(pluginInstance, "res/digitalLed_on.svg")));
 		setSVG(frames[0]);
 		wrap();
 		box.pos = Vec(x, y);
 		value = pVal;
 	}
 
-	void draw(NVGcontext *vg) override
+	void draw(const DrawArgs &args) override
 	{
 		int index = (*value > 0) ? 1 : 0;
 		setSVG(frames[index]);
-		SVGWidget::draw(vg);
+		SVGWidget::draw(args.vg);
 	}
 };
 #endif
@@ -382,25 +384,25 @@ public:
 	{
 		digits = digit;
 		precision = precis;
-		font = Font::load(assetPlugin(pluginInstance, "res/Segment7Standard.ttf"));
+		font = APP->window->loadFont(asset::plugin(pluginInstance, "res/Segment7Standard.ttf"));
 	};
 
-	void draw(NVGcontext *vg) override
+	void draw(const DrawArgs &args) override
 	{
 		// Background
 		NVGcolor backgroundColor = nvgRGB(0x20, 0x20, 0x20);
 		NVGcolor borderColor = nvgRGB(0x10, 0x10, 0x10);
-		nvgBeginPath(vg);
-		nvgRoundedRect(vg, 0.0, 0.0, box.size.x, box.size.y, 4.0);
-		nvgFillColor(vg, backgroundColor);
-		nvgFill(vg);
-		nvgStrokeWidth(vg, 1.0);
-		nvgStrokeColor(vg, borderColor);
-		nvgStroke(vg);
+		nvgBeginPath(args.vg);
+		nvgRoundedRect(args.vg, 0.0, 0.0, box.size.x, box.size.y, 4.0);
+		nvgFillColor(args.vg, backgroundColor);
+		nvgFill(args.vg);
+		nvgStrokeWidth(args.vg, 1.0);
+		nvgStrokeColor(args.vg, borderColor);
+		nvgStroke(args.vg);
 		// text
-		nvgFontSize(vg, 18);
-		nvgFontFaceId(vg, font->handle);
-		nvgTextLetterSpacing(vg, 2.5);
+		nvgFontSize(args.vg, 18);
+		nvgFontFaceId(args.vg, font->handle);
+		nvgTextLetterSpacing(args.vg, 2.5);
 
 		std::stringstream to_display;
 		if(precision == 0)
@@ -411,16 +413,16 @@ public:
 		Vec textPos = Vec(3, 17);
 
 		NVGcolor textColor = nvgRGB(0xdf, 0xd2, 0x2c);
-		nvgFillColor(vg, nvgTransRGBA(textColor, 16));
-		nvgText(vg, textPos.x, textPos.y, "~~", NULL);
+		nvgFillColor(args.vg, nvgTransRGBA(textColor, 16));
+		nvgText(args.vg, textPos.x, textPos.y, "~~", NULL);
 
 		textColor = nvgRGB(0xda, 0xe9, 0x29);
-		nvgFillColor(vg, nvgTransRGBA(textColor, 16));
-		nvgText(vg, textPos.x, textPos.y, "\\\\", NULL);
+		nvgFillColor(args.vg, nvgTransRGBA(textColor, 16));
+		nvgText(args.vg, textPos.x, textPos.y, "\\\\", NULL);
 
 		textColor = nvgRGB(0xf0, 0x00, 0x00);
-		nvgFillColor(vg, textColor);
-		nvgText(vg, textPos.x, textPos.y, to_display.str().c_str(), NULL);
+		nvgFillColor(args.vg, textColor);
+		nvgText(args.vg, textPos.x, textPos.y, to_display.str().c_str(), NULL);
 	}
 };
 

@@ -35,7 +35,7 @@ struct BefacoSlidePotFix : SVGSlider
 	
 		maxHandlePos = Vec(mm2px(-3.09541 / 2.0 + 2.27312 / 2.0), -mm2px(5.09852 / 2.0)).plus(margin);
 		minHandlePos = Vec(mm2px(-3.09541 / 2.0 + 2.27312 / 2.0), mm2px(27.51667 - 5.09852 / 2.0)).plus(margin);
-		setSVGs(SVG::load(assetPlugin(pluginInstance, "res/BefacoSlidePot.svg")), SVG::load(assetPlugin(pluginInstance, "res/BefacoSlidePotHandle.svg")));
+		setSVGs(APP->window->loadSvg(asset::plugin(pluginInstance, "res/BefacoSlidePot.svg")), APP->window->loadSvg(asset::plugin(pluginInstance, "res/BefacoSlidePotHandle.svg")));
 		background->box.pos = margin;
 		box.size = background->box.size.plus(margin.mult(2));
 	}
@@ -49,15 +49,15 @@ struct CounterSwitch : SVGFader
 		snap = true;
 		maxHandlePos = Vec(-mm2px(2.3-2.3/2.0), 0);
 		minHandlePos = Vec(-mm2px(2.3-2.3/2.0), mm2px(24-2.8));
-		background->svg = SVG::load(assetPlugin(pluginInstance, "res/counterSwitchPot.svg"));
+		background->svg = APP->window->loadSvg(asset::plugin(pluginInstance, "res/counterSwitchPot.svg"));
 		background->wrap();
 		background->box.pos = Vec(0, 0);
 		box.size = background->box.size;
-		handle->svg = SVG::load(assetPlugin(pluginInstance, "res/counterSwitchPotHandle.svg"));
+		handle->svg = APP->window->loadSvg(asset::plugin(pluginInstance, "res/counterSwitchPotHandle.svg"));
 		handle->wrap();
 	}
 
-	void randomize() override { setValue(roundf(randomUniform() * maxValue)); }
+	void randomize() override { setValue(roundf(random::uniform() * maxValue)); }
 };
 
 struct RunModeDisplay : TransparentWidget
@@ -67,38 +67,38 @@ struct RunModeDisplay : TransparentWidget
 
 	RunModeDisplay()
 	{
-		font = Font::load(assetPlugin(pluginInstance, "res/Segment7Standard.ttf"));
+		font = APP->window->loadFont(asset::plugin(pluginInstance, "res/Segment7Standard.ttf"));
 	}
 
-	void draw(NVGcontext *vg) override
+	void draw(const DrawArgs &args) override
 	{
 		// Background
 		NVGcolor backgroundColor = nvgRGB(0x20, 0x20, 0x20);
 		NVGcolor borderColor = nvgRGB(0x10, 0x10, 0x10);
-		nvgBeginPath(vg);
-		nvgRoundedRect(vg, 0.0, 0.0, box.size.x, box.size.y, 4.0);
-		nvgFillColor(vg, backgroundColor);
-		nvgFill(vg);
-		nvgStrokeWidth(vg, 1.0);
-		nvgStrokeColor(vg, borderColor);
-		nvgStroke(vg);
+		nvgBeginPath(args.vg);
+		nvgRoundedRect(args.vg, 0.0, 0.0, box.size.x, box.size.y, 4.0);
+		nvgFillColor(args.vg, backgroundColor);
+		nvgFill(args.vg);
+		nvgStrokeWidth(args.vg, 1.0);
+		nvgStrokeColor(args.vg, borderColor);
+		nvgStroke(args.vg);
 		// text
-		nvgFontSize(vg, 18);
-		nvgFontFaceId(vg, font->handle);
-		nvgTextLetterSpacing(vg, 2.5);
+		nvgFontSize(args.vg, 18);
+		nvgFontFaceId(args.vg, font->handle);
+		nvgTextLetterSpacing(args.vg, 2.5);
 
 		Vec textPos = Vec(2, 18);
 		NVGcolor textColor = nvgRGB(0xdf, 0xd2, 0x2c);
-		nvgFillColor(vg, nvgTransRGBA(textColor, 16));
-		nvgText(vg, textPos.x, textPos.y, "~~", NULL);
+		nvgFillColor(args.vg, nvgTransRGBA(textColor, 16));
+		nvgText(args.vg, textPos.x, textPos.y, "~~", NULL);
 
 		textColor = nvgRGB(0xda, 0xe9, 0x29);
-		nvgFillColor(vg, nvgTransRGBA(textColor, 16));
-		nvgText(vg, textPos.x, textPos.y, "\\\\", NULL);
+		nvgFillColor(args.vg, nvgTransRGBA(textColor, 16));
+		nvgText(args.vg, textPos.x, textPos.y, "\\\\", NULL);
 
 		textColor = nvgRGB(0xf0, 0x00, 0x00);
-		nvgFillColor(vg, textColor);
-		nvgText(vg, textPos.x, textPos.y, run_modes[int(std::round(*mode))], NULL);
+		nvgFillColor(args.vg, textColor);
+		nvgText(args.vg, textPos.x, textPos.y, run_modes[int(std::round(*mode))], NULL);
 	}
 
 private:
@@ -149,8 +149,9 @@ struct M581 : Module
 		NUM_LIGHTS
 	};
 
-	M581() : Module(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS)
+	M581()
 	{
+		config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
 		#ifdef LAUNCHPAD
 		drv = new LaunchpadBindingDriver(this, Scene2, 3);
 		drv->SetAutoPageKey(LaunchpadKey::SESSION, 0);
@@ -176,7 +177,7 @@ struct M581 : Module
 	}
 	#endif
 
-	void step() override;
+	void process(const ProcessArgs &args) override;
 	void reset() override { load(); }
 	void randomize() override { load(); }
 
@@ -192,8 +193,8 @@ struct M581 : Module
 	{
 		switch(var)
 		{
-			case 0: return &params[M581::RUN_MODE].value;
-			case 1: return &params[M581::NUM_STEPS].value;
+			case 0: return &params[M581::RUN_MODE].getValue();
+			case 1: return &params[M581::NUM_STEPS].getValue();
 		}
 		return NULL;
 	}
@@ -221,6 +222,6 @@ private:
 	void beginNewStep();
 	void showCurStep(int cur_step, int sub_div);
 	bool any();
-	SchmittTrigger clockTrigger;
-	SchmittTrigger resetTrigger;
+	dsp::SchmittTrigger clockTrigger;
+	dsp::SchmittTrigger resetTrigger;
 };

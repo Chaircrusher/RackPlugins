@@ -19,20 +19,20 @@ void Burst::all_off()
 	active = false;
 }
 
-void Burst::step()
+void Burst::process(const ProcessArgs &args)
 {
-	if(resetTrigger.process(inputs[RESET].value))
+	if(resetTrigger.process(inputs[RESET].getVoltage()))
 	{
 		reset();
 	} else
 	{
 		if(!active && !trigger_pending)
 		{
-			float tv = inputs[TRIGGER_THRESH_IN].active && inputs[TRIGGER_THRESH_IN].value > params[TRIG_THRESH].value ? 1.0 : 0.0;
-			trigger_pending = trigger.process(params[TRIGGER].value + tv);
+			float tv = inputs[TRIGGER_THRESH_IN].isConnected() && inputs[TRIGGER_THRESH_IN].getVoltage() > params[TRIG_THRESH].getValue() ? 1.0 : 0.0;
+			trigger_pending = trigger.process(params[TRIGGER].getValue() + tv);
 		}
 
-		int clk = clock.process(inputs[CLOCK_IN].value); // 1=rise, -1=fall
+		int clk = clock.process(inputs[CLOCK_IN].getVoltage()); // 1=rise, -1=fall
 
 		if(clk == 1)
 		{
@@ -53,8 +53,8 @@ void Burst::prepare_step()
 	activating_params.first_cycle = true;
 	activating_params.cycle_counter = activating_params.out_span = 0;
 	activating_params.max_span = getInt(OUT_SPAN, OUT_SPAN_IN, 1, NUM_BURST_PORTS);
-	activating_params.mode = (enum Burst::MODE)roundf(params[MODE].value);
-	activating_params.invert_mode = roundf(params[MODE_INVERT].value) > 0.5;
+	activating_params.mode = (enum Burst::MODE)roundf(params[MODE].getValue());
+	activating_params.invert_mode = roundf(params[MODE_INVERT].getValue()) > 0.5;
 	activating_params.retrogade = false;	
 	activating_params.max_cycle = getInt(EVENT_COUNT, EVENT_COUNT_IN, 0, 23) + 1;
 	trigger_pending = false;
@@ -95,7 +95,7 @@ void Burst::next_step()
 	{
 		case Burst::RAND:
 		{
-			activating_params.out_span = int(rescale(randomUniform(), 0.0, 1.0, 0.0, activating_params.max_span));
+			activating_params.out_span = int(rescale(random::uniform(), 0.0, 1.0, 0.0, activating_params.max_span));
 			port(activating_params.out_span, true);
 			activating_params.cycle_counter++;
 		}
@@ -169,8 +169,8 @@ void Burst::next_step()
 
 int Burst::getInt(ParamIds p_id, InputIds i_id, float minValue, float maxValue)
 {
-	float offs = inputs[i_id].active ? rescale(inputs[i_id].value, 0.0, 5.0, minValue, maxValue) : 0.0;
-	return (int)clamp(offs + params[p_id].value, minValue, maxValue);
+	float offs = inputs[i_id].isConnected() ? rescale(inputs[i_id].getVoltage(), 0.0, 5.0, minValue, maxValue) : 0.0;
+	return (int)clamp(offs + params[p_id].getValue(), minValue, maxValue);
 }
 
 BurstWidget::BurstWidget(Burst *module) : SequencerWidget(module)
@@ -179,7 +179,7 @@ BurstWidget::BurstWidget(Burst *module) : SequencerWidget(module)
 	{
 		SVGPanel *panel = new SVGPanel();
 		panel->box.size = box.size;
-		panel->setBackground(SVG::load(assetPlugin(pluginInstance, "res/modules/Burst.svg")));		
+		panel->setBackground(APP->window->loadSvg(asset::plugin(pluginInstance, "res/modules/Burst.svg")));		
 		addChild(panel);
 	}
 	addChild(createWidget<ScrewBlack>(Vec(RACK_GRID_WIDTH, 0)));
@@ -188,23 +188,35 @@ BurstWidget::BurstWidget(Burst *module) : SequencerWidget(module)
 	addChild(createWidget<ScrewBlack>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, box.size.y - RACK_GRID_WIDTH)));
 	float lft_x = mm2px(3.428);
 
-	addInput(createPort<PJ301RPort>(Vec(lft_x, yncscape(108.765, 8.255)), PortWidget::INPUT, module, Burst::CLOCK_IN));
-	addParam(createParam<CKSSThreeFix>(Vec(mm2px(31.624), yncscape(105.749, 10.0)), module, Burst::MODE, 0.0, 2.0, 0.0));
-	addParam(createParam<CKSSFix>(Vec(mm2px(71.875), yncscape(107.990, 5.46)), module, Burst::MODE_INVERT, 0.0, 1.0, 0.0));
+	addInput(createInput<PJ301RPort>(Vec(lft_x, yncscape(108.765, 8.255)), module, Burst::CLOCK_IN));
+	if(module)
+		module->configParam(Burst::MODE, 0.0, 2.0, 0.0);
+	addParam(createParam<CKSSThreeFix>(Vec(mm2px(31.624), yncscape(105.749, 10.0)), module, Burst::MODE));
+	if(module)
+		module->configParam(Burst::MODE_INVERT, 0.0, 1.0, 0.0);
+	addParam(createParam<CKSSFix>(Vec(mm2px(71.875), yncscape(107.990, 5.46)), module, Burst::MODE_INVERT));
 	
-	addInput(createPort<PJ301BPort>(Vec(lft_x, yncscape(74.386, 8.255)), PortWidget::INPUT, module, Burst::OUT_SPAN_IN));
-	ParamWidget *pwdg = createParam<Davies1900hFixWhiteKnob>(Vec(mm2px(22.644), yncscape(73.751, 9.525)), module, Burst::OUT_SPAN, 1.0, NUM_BURST_PORTS, 1.0);
+	addInput(createInput<PJ301BPort>(Vec(lft_x, yncscape(74.386, 8.255)), module, Burst::OUT_SPAN_IN));
+	if(module)
+		module->configParam(Burst::OUT_SPAN, 1.0, NUM_BURST_PORTS, 1.0);
+	ParamWidget *pwdg = createParam<Davies1900hFixWhiteKnob>(Vec(mm2px(22.644), yncscape(73.751, 9.525)), module, Burst::OUT_SPAN);
 	((Davies1900hKnob *)pwdg)->snap = true;
 	addParam(pwdg);
-	pwdg = createParam<Davies1900hFixWhiteKnob>(Vec(mm2px(49.111), yncscape(73.751, 9.525)), module, Burst::EVENT_COUNT, 0.0, 23.0, 0.0);
+	if(module)
+		module->configParam(Burst::EVENT_COUNT, 0.0, 23.0, 0.0);
+	pwdg = createParam<Davies1900hFixWhiteKnob>(Vec(mm2px(49.111), yncscape(73.751, 9.525)), module, Burst::EVENT_COUNT);
 	((Davies1900hKnob *)pwdg)->snap = true;
 	addParam(pwdg);
-	addInput(createPort<PJ301BPort>(Vec(mm2px(69.597), yncscape(74.386, 8.255)), PortWidget::INPUT, module, Burst::EVENT_COUNT_IN));
+	addInput(createInput<PJ301BPort>(Vec(mm2px(69.597), yncscape(74.386, 8.255)), module, Burst::EVENT_COUNT_IN));
 
-	addInput(createPort<PJ301BPort>(Vec(lft_x, yncscape(43.036, 8.255)), PortWidget::INPUT, module, Burst::TRIGGER_THRESH_IN));
-	addParam(createParam<Davies1900hFixRedKnob>(Vec(mm2px(16.027), yncscape(42.401, 9.525)), module, Burst::TRIG_THRESH, LVL_OFF, LVL_ON, LVL_OFF));
-	addInput(createPort<PJ301YPort>(Vec(mm2px(56.363), yncscape(43.036, 8.255)), PortWidget::INPUT, module, Burst::RESET));
-	addParam(createParam<BefacoPushBig>(Vec(mm2px(69.224), yncscape(42.664, 8.999)), module, Burst::TRIGGER, 0.0, 1.0, 0.0));
+	addInput(createInput<PJ301BPort>(Vec(lft_x, yncscape(43.036, 8.255)), module, Burst::TRIGGER_THRESH_IN));
+	if(module)
+		module->configParam(Burst::TRIG_THRESH, LVL_OFF, LVL_ON, LVL_OFF);
+	addParam(createParam<Davies1900hFixRedKnob>(Vec(mm2px(16.027), yncscape(42.401, 9.525)), module, Burst::TRIG_THRESH));
+	addInput(createInput<PJ301YPort>(Vec(mm2px(56.363), yncscape(43.036, 8.255)), module, Burst::RESET));
+	if(module)
+		module->configParam(Burst::TRIGGER, 0.0, 1.0, 0.0);
+	addParam(createParam<BefacoPushBig>(Vec(mm2px(69.224), yncscape(42.664, 8.999)), module, Burst::TRIGGER));
 
 	float ysup_port = yncscape(17.532, 8.255);
 	float yinf_port = yncscape(4.832, 8.255);
@@ -217,11 +229,11 @@ BurstWidget::BurstWidget(Burst *module) : SequencerWidget(module)
 	{
 		if(k < NUM_BURST_PORTS / 2)
 		{
-			addOutput(createPort<PJ301WPort>(Vec(mm2px(x_ports[k]), ysup_port), PortWidget::OUTPUT, module, Burst::OUT_1+k));
+			addOutput(createOutput<PJ301WPort>(Vec(mm2px(x_ports[k]), ysup_port), module, Burst::OUT_1+k));
 			addChild(createLight<LargeLight<RedLight>>(Vec(mm2px(x_leds[k]), yinf_led), module, Burst::LEDOUT_1 + k));
 		} else
 		{
-			addOutput(createPort<PJ301WPort>(Vec(mm2px(x_ports[k]), yinf_port), PortWidget::OUTPUT, module, Burst::OUT_1 + k));
+			addOutput(createOutput<PJ301WPort>(Vec(mm2px(x_ports[k]), yinf_port), module, Burst::OUT_1 + k));
 			addChild(createLight<LargeLight<RedLight>>(Vec(mm2px(x_leds[k]), ysup_led), module, Burst::LEDOUT_1 + k));
 		}
 	}

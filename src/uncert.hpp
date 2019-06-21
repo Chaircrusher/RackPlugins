@@ -57,7 +57,7 @@ struct Uncertain : Module
 	{		
 	}
 
-	void step() override;
+	void process(const ProcessArgs &args) override;
 	void reset() override { load(); }
 	void dataFromJson(json_t *root) override { Module::dataFromJson(root); on_loaded(); }
 	json_t *dataToJson() override

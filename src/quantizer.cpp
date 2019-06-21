@@ -1,18 +1,18 @@
 #include "common.hpp"
 #include "quantizer.hpp"
 
-void Quantizer::step()
+void Quantizer::process(const ProcessArgs &args)
 {
 	for(int k = 0; k < NUM_QUANTIZERS; k++)
 	{
-		if(outputs[OUT_1+k].active) 
-			outputs[OUT_1 + k].value = quantize_out(inputs[IN_1+k], getQuantize(k));
+		if(outputs[OUT_1+k].isConnected()) 
+			outputs[OUT_1 + k].setVoltage(quantize_out(inputs[IN_1+k], getQuantize(k)));
 	}
 }
 
 float Quantizer::getQuantize(int n)
 {
-	return inputs[TRNSPIN_1 + n].normalize(0.0) + params[TRANSP_1 + n].value;
+	return inputs[TRNSPIN_1 + n].normalize(0.0) + params[TRANSP_1 + n].getValue();
 }
 
 float Quantizer::quantize_out(Input &in, float transpose)
@@ -24,14 +24,15 @@ float Quantizer::quantize_out(Input &in, float transpose)
 	return octave + semi / 12.0;
 }
 
-QuantizerWidget::QuantizerWidget(Quantizer *module) : ModuleWidget(module)
+QuantizerWidget::QuantizerWidget(Quantizer *module)
 {
+	setModule(module);
 	box.size = Vec(10 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT);
 
 	{
 		SVGPanel *panel = new SVGPanel();
 		panel->box.size = box.size;
-		panel->setBackground(SVG::load(assetPlugin(pluginInstance, "res/modules/quantizer.svg")));		
+		panel->setBackground(APP->window->loadSvg(asset::plugin(pluginInstance, "res/modules/quantizer.svg")));		
 		addChild(panel);
 	}
 
@@ -50,10 +51,12 @@ QuantizerWidget::QuantizerWidget(Quantizer *module) : ModuleWidget(module)
 	
 	for(int k = 0; k < NUM_QUANTIZERS; k++)
 	{
-		addInput(createPort<PJ301GRPort>(Vec(in_x, y), PortWidget::INPUT, module, Quantizer::IN_1 + k));
-		addParam(createParam<Davies1900hFixWhiteKnobSmall>(Vec(pot_x, ypot+1), module, Quantizer::TRANSP_1+k, 0.0, 5.0, 0.0));
-		addInput(createPort<PJ301BPort>(Vec(mod_x, mod_y), PortWidget::INPUT, module, Quantizer::TRNSPIN_1 + k));
-		addOutput(createPort<PJ301GPort>(Vec(out_x, y), PortWidget::OUTPUT, module, Quantizer::OUT_1+k));
+		addInput(createInput<PJ301GRPort>(Vec(in_x, y), module, Quantizer::IN_1 + k));
+		if(module)
+			module->configParam(0.0, 5.0, 0.0);
+		addParam(createParam<Davies1900hFixWhiteKnobSmall>(Vec(pot_x, ypot+1), module, Quantizer::TRANSP_1+k));
+		addInput(createInput<PJ301BPort>(Vec(mod_x, mod_y), module, Quantizer::TRNSPIN_1 + k));
+		addOutput(createOutput<PJ301GPort>(Vec(out_x, y), module, Quantizer::OUT_1+k));
 		y += delta_y;
 		ypot += delta_y;
 		mod_y += delta_y;

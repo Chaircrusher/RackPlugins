@@ -45,12 +45,12 @@ struct Switch : Module
 	Switch() : Module(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS)
 	{		
 	}
-	void step() override;
+	void process(const ProcessArgs &args) override;
 
 private:
 
 	bool getSwitch(int n)
 	{
-		return (inputs[MOD_1 + n].normalize(0.0) + params[SW_1 + n].value) > 0.5;
+		return (inputs[MOD_1 + n].normalize(0.0) + params[SW_1 + n].getValue()) > 0.5;
 	}
 };
