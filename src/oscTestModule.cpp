@@ -23,24 +23,24 @@ OscTestWidget::OscTestWidget(OscTest *module) : ModuleWidget(module)
 		addChild(panel);
 	}
 
-	addChild(Widget::create<ScrewSilver>(Vec(RACK_GRID_WIDTH, 0)));
-	addChild(Widget::create<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, 0)));
-	addChild(Widget::create<ScrewSilver>(Vec(RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
-	addChild(Widget::create<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
+	addChild(createWidget<ScrewSilver>(Vec(RACK_GRID_WIDTH, 0)));
+	addChild(createWidget<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, 0)));
+	addChild(createWidget<ScrewSilver>(Vec(RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
+	addChild(createWidget<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
 	addChild(new DigitalLed(60, 20, &module->connected));
 
-	ParamWidget *pctrl = ParamWidget::create<Davies1900hBlackKnob>(Vec(20, 70), module, OscTest::POT1, 0.0, 1.0, 0.0);
+	ParamWidget *pctrl = createParam<Davies1900hBlackKnob>(Vec(20, 70), module, OscTest::POT1, 0.0, 1.0, 0.0);
 	oscControl *oc = new oscControl("/Knob1");
 	module->drv->Add(oc, pctrl);
 	addParam(pctrl);     // rnd threshold
 	
-	ModuleLightWidget *plight = ModuleLightWidget::create<MediumLight<RedLight>>(Vec(60, 70), module, OscTest::LED1);
+	ModuleLightWidget *plight = createLight<MediumLight<RedLight>>(Vec(60, 70), module, OscTest::LED1);
 	oc = new oscControl("/Led1");
 	module->drv->Add(oc, plight);
 	addChild(plight);
 	
-	addOutput(Port::create<PJ301MPort>(Vec(50, 100), Port::OUTPUT, module, OscTest::OUT_1 ));
-	pctrl = ParamWidget::create<CKSS>(Vec(20, 20), module, OscTest::BTN1, 0.0, 1.0, 0.0);
+	addOutput(createPort<PJ301MPort>(Vec(50, 100), PortWidget::OUTPUT, module, OscTest::OUT_1 ));
+	pctrl = createParam<CKSS>(Vec(20, 20), module, OscTest::BTN1, 0.0, 1.0, 0.0);
 	oc = new oscControl("/Switch1");
 	module->drv->Add(oc, pctrl);
 	addParam(pctrl);

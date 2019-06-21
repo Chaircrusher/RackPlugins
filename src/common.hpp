@@ -335,7 +335,7 @@ protected:
 
 	Menu *createContextMenu() override
 	{
-		Menu *menu = ModuleWidget::createContextMenu();
+		Menu *menu = ModulecreateWidgetContextMenu();
 		MenuLabel *spacerLabel = new MenuLabel();
 		menu->addChild(spacerLabel);
 		return addContextMenu(menu);

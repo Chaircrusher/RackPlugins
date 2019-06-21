@@ -32,26 +32,26 @@ void init(rack::Plugin *p)
 	p->manual = "https://github.com/The-XOR/VCV-Sequencers/blob/master/README.md";
 
 	// For each module, specify the ModuleWidget subclass, manufacturer slug (for saving in patches), manufacturer human-readable name, module slug, and module name
-	p->addModel(Model::create<Klee, KleeWidget>("Klee"));
-	p->addModel(Model::create<M581, M581Widget>("M581"));
-	p->addModel(Model::create<Z8K, Z8KWidget>("Z8K"));
-	p->addModel(Model::create<Renato, RenatoWidget>("Renato"));
-	p->addModel(Model::create<Spiralone, SpiraloneWidget>("Spiralone"));
-	p->addModel(Model::create<Burst, BurstWidget>("Burst"));
-	p->addModel(Model::create<Uncertain, UncertainWidget>("Uncertain"));
-	p->addModel(Model::create<PwmClock, PwmClockWidget>("PWMClock"));
-	p->addModel(Model::create<Quantizer, QuantizerWidget>("Quantizer"));
-	p->addModel(Model::create<Attenuator, AttenuatorWidget>("Attenuator"));
-	p->addModel(Model::create<Boole, BooleWidget>("Boole"));
-	p->addModel(Model::create<Switch, SwitchWidget>("Switch"));
-	p->addModel(Model::create<Mplex, MplexWidget>("Mplex"));
+	p->addModel(createModel<Klee, KleeWidget>("Klee"));
+	p->addModel(createModel<M581, M581Widget>("M581"));
+	p->addModel(createModel<Z8K, Z8KWidget>("Z8K"));
+	p->addModel(createModel<Renato, RenatoWidget>("Renato"));
+	p->addModel(createModel<Spiralone, SpiraloneWidget>("Spiralone"));
+	p->addModel(createModel<Burst, BurstWidget>("Burst"));
+	p->addModel(createModel<Uncertain, UncertainWidget>("Uncertain"));
+	p->addModel(createModel<PwmClock, PwmClockWidget>("PWMClock"));
+	p->addModel(createModel<Quantizer, QuantizerWidget>("Quantizer"));
+	p->addModel(createModel<Attenuator, AttenuatorWidget>("Attenuator"));
+	p->addModel(createModel<Boole, BooleWidget>("Boole"));
+	p->addModel(createModel<Switch, SwitchWidget>("Switch"));
+	p->addModel(createModel<Mplex, MplexWidget>("Mplex"));
 
 #ifdef LPTEST_MODULE
-	p->addModel(Model::create<LaunchpadTest, LaunchpadTestWidget>("TheXOR", "LaunchpadTest", "Launchpad Test", DIGITAL_TAG));
+	p->addModel(createModel<LaunchpadTest, LaunchpadTestWidget>("TheXOR", "LaunchpadTest", "Launchpad Test", DIGITAL_TAG));
 #endif
 
 #ifdef OSCTEST_MODULE
-	p->addModel(Model::create<OscTest, OscTestWidget>("TheXOR", "OSCTest", "OSC Test", DIGITAL_TAG));
+	p->addModel(createModel<OscTest, OscTestWidget>("TheXOR", "OSCTest", "OSC Test", DIGITAL_TAG));
 #endif
 
 	// Any other pluginInstance initialization may go here.

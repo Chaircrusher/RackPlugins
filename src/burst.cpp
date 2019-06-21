@@ -182,29 +182,29 @@ BurstWidget::BurstWidget(Burst *module) : SequencerWidget(module)
 		panel->setBackground(SVG::load(assetPlugin(pluginInstance, "res/modules/Burst.svg")));		
 		addChild(panel);
 	}
-	addChild(Widget::create<ScrewBlack>(Vec(RACK_GRID_WIDTH, 0)));
-	addChild(Widget::create<ScrewBlack>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, 0)));
-	addChild(Widget::create<ScrewBlack>(Vec(RACK_GRID_WIDTH, box.size.y - RACK_GRID_WIDTH)));
-	addChild(Widget::create<ScrewBlack>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, box.size.y - RACK_GRID_WIDTH)));
+	addChild(createWidget<ScrewBlack>(Vec(RACK_GRID_WIDTH, 0)));
+	addChild(createWidget<ScrewBlack>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, 0)));
+	addChild(createWidget<ScrewBlack>(Vec(RACK_GRID_WIDTH, box.size.y - RACK_GRID_WIDTH)));
+	addChild(createWidget<ScrewBlack>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, box.size.y - RACK_GRID_WIDTH)));
 	float lft_x = mm2px(3.428);
 
-	addInput(Port::create<PJ301RPort>(Vec(lft_x, yncscape(108.765, 8.255)), Port::INPUT, module, Burst::CLOCK_IN));
-	addParam(ParamWidget::create<CKSSThreeFix>(Vec(mm2px(31.624), yncscape(105.749, 10.0)), module, Burst::MODE, 0.0, 2.0, 0.0));
-	addParam(ParamWidget::create<CKSSFix>(Vec(mm2px(71.875), yncscape(107.990, 5.46)), module, Burst::MODE_INVERT, 0.0, 1.0, 0.0));
+	addInput(createPort<PJ301RPort>(Vec(lft_x, yncscape(108.765, 8.255)), PortWidget::INPUT, module, Burst::CLOCK_IN));
+	addParam(createParam<CKSSThreeFix>(Vec(mm2px(31.624), yncscape(105.749, 10.0)), module, Burst::MODE, 0.0, 2.0, 0.0));
+	addParam(createParam<CKSSFix>(Vec(mm2px(71.875), yncscape(107.990, 5.46)), module, Burst::MODE_INVERT, 0.0, 1.0, 0.0));
 	
-	addInput(Port::create<PJ301BPort>(Vec(lft_x, yncscape(74.386, 8.255)), Port::INPUT, module, Burst::OUT_SPAN_IN));
-	ParamWidget *pwdg = ParamWidget::create<Davies1900hFixWhiteKnob>(Vec(mm2px(22.644), yncscape(73.751, 9.525)), module, Burst::OUT_SPAN, 1.0, NUM_BURST_PORTS, 1.0);
+	addInput(createPort<PJ301BPort>(Vec(lft_x, yncscape(74.386, 8.255)), PortWidget::INPUT, module, Burst::OUT_SPAN_IN));
+	ParamWidget *pwdg = createParam<Davies1900hFixWhiteKnob>(Vec(mm2px(22.644), yncscape(73.751, 9.525)), module, Burst::OUT_SPAN, 1.0, NUM_BURST_PORTS, 1.0);
 	((Davies1900hKnob *)pwdg)->snap = true;
 	addParam(pwdg);
-	pwdg = ParamWidget::create<Davies1900hFixWhiteKnob>(Vec(mm2px(49.111), yncscape(73.751, 9.525)), module, Burst::EVENT_COUNT, 0.0, 23.0, 0.0);
+	pwdg = createParam<Davies1900hFixWhiteKnob>(Vec(mm2px(49.111), yncscape(73.751, 9.525)), module, Burst::EVENT_COUNT, 0.0, 23.0, 0.0);
 	((Davies1900hKnob *)pwdg)->snap = true;
 	addParam(pwdg);
-	addInput(Port::create<PJ301BPort>(Vec(mm2px(69.597), yncscape(74.386, 8.255)), Port::INPUT, module, Burst::EVENT_COUNT_IN));
+	addInput(createPort<PJ301BPort>(Vec(mm2px(69.597), yncscape(74.386, 8.255)), PortWidget::INPUT, module, Burst::EVENT_COUNT_IN));
 
-	addInput(Port::create<PJ301BPort>(Vec(lft_x, yncscape(43.036, 8.255)), Port::INPUT, module, Burst::TRIGGER_THRESH_IN));
-	addParam(ParamWidget::create<Davies1900hFixRedKnob>(Vec(mm2px(16.027), yncscape(42.401, 9.525)), module, Burst::TRIG_THRESH, LVL_OFF, LVL_ON, LVL_OFF));
-	addInput(Port::create<PJ301YPort>(Vec(mm2px(56.363), yncscape(43.036, 8.255)), Port::INPUT, module, Burst::RESET));
-	addParam(ParamWidget::create<BefacoPushBig>(Vec(mm2px(69.224), yncscape(42.664, 8.999)), module, Burst::TRIGGER, 0.0, 1.0, 0.0));
+	addInput(createPort<PJ301BPort>(Vec(lft_x, yncscape(43.036, 8.255)), PortWidget::INPUT, module, Burst::TRIGGER_THRESH_IN));
+	addParam(createParam<Davies1900hFixRedKnob>(Vec(mm2px(16.027), yncscape(42.401, 9.525)), module, Burst::TRIG_THRESH, LVL_OFF, LVL_ON, LVL_OFF));
+	addInput(createPort<PJ301YPort>(Vec(mm2px(56.363), yncscape(43.036, 8.255)), PortWidget::INPUT, module, Burst::RESET));
+	addParam(createParam<BefacoPushBig>(Vec(mm2px(69.224), yncscape(42.664, 8.999)), module, Burst::TRIGGER, 0.0, 1.0, 0.0));
 
 	float ysup_port = yncscape(17.532, 8.255);
 	float yinf_port = yncscape(4.832, 8.255);
@@ -217,12 +217,12 @@ BurstWidget::BurstWidget(Burst *module) : SequencerWidget(module)
 	{
 		if(k < NUM_BURST_PORTS / 2)
 		{
-			addOutput(Port::create<PJ301WPort>(Vec(mm2px(x_ports[k]), ysup_port), Port::OUTPUT, module, Burst::OUT_1+k));
-			addChild(ModuleLightWidget::create<LargeLight<RedLight>>(Vec(mm2px(x_leds[k]), yinf_led), module, Burst::LEDOUT_1 + k));
+			addOutput(createPort<PJ301WPort>(Vec(mm2px(x_ports[k]), ysup_port), PortWidget::OUTPUT, module, Burst::OUT_1+k));
+			addChild(createLight<LargeLight<RedLight>>(Vec(mm2px(x_leds[k]), yinf_led), module, Burst::LEDOUT_1 + k));
 		} else
 		{
-			addOutput(Port::create<PJ301WPort>(Vec(mm2px(x_ports[k]), yinf_port), Port::OUTPUT, module, Burst::OUT_1 + k));
-			addChild(ModuleLightWidget::create<LargeLight<RedLight>>(Vec(mm2px(x_leds[k]), ysup_led), module, Burst::LEDOUT_1 + k));
+			addOutput(createPort<PJ301WPort>(Vec(mm2px(x_ports[k]), yinf_port), PortWidget::OUTPUT, module, Burst::OUT_1 + k));
+			addChild(createLight<LargeLight<RedLight>>(Vec(mm2px(x_leds[k]), ysup_led), module, Burst::LEDOUT_1 + k));
 		}
 	}
 }

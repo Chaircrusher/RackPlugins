@@ -21,10 +21,10 @@ AttenuatorWidget::AttenuatorWidget(Attenuator *module) : ModuleWidget(module)
 		addChild(panel);
 	}
 
-	addChild(Widget::create<ScrewBlack>(Vec(RACK_GRID_WIDTH, 0)));
-	addChild(Widget::create<ScrewBlack>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, 0)));
-	addChild(Widget::create<ScrewBlack>(Vec(RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
-	addChild(Widget::create<ScrewBlack>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
+	addChild(createWidget<ScrewBlack>(Vec(RACK_GRID_WIDTH, 0)));
+	addChild(createWidget<ScrewBlack>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, 0)));
+	addChild(createWidget<ScrewBlack>(Vec(RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
+	addChild(createWidget<ScrewBlack>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
 	float in_x = mm2px(2.490);
 	float pot_x = mm2px(16.320);
 	float out_x = mm2px(29.894);
@@ -34,9 +34,9 @@ AttenuatorWidget::AttenuatorWidget(Attenuator *module) : ModuleWidget(module)
 	
 	for(int k = 0; k < NUM_ATTENUATORS; k++)
 	{
-		addInput(Port::create<PJ301GRPort>(Vec(in_x, y), Port::INPUT, module, Attenuator::IN_1 + k));
-		addParam(ParamWidget::create<Davies1900hFixWhiteKnobSmall>(Vec(pot_x, ypot), module, Attenuator::ATT_1+k, 0.0, 1.0, 1.0));
-		addOutput(Port::create<PJ301GPort>(Vec(out_x, y), Port::OUTPUT, module, Attenuator::OUT_1+k));
+		addInput(createPort<PJ301GRPort>(Vec(in_x, y), PortWidget::INPUT, module, Attenuator::IN_1 + k));
+		addParam(createParam<Davies1900hFixWhiteKnobSmall>(Vec(pot_x, ypot), module, Attenuator::ATT_1+k, 0.0, 1.0, 1.0));
+		addOutput(createPort<PJ301GPort>(Vec(out_x, y), PortWidget::OUTPUT, module, Attenuator::OUT_1+k));
 		y += delta_y;
 		ypot += delta_y;
 	}
